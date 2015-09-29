@@ -1,0 +1,1414 @@
+{
+	"auto_complete":
+	{
+		"selected_items":
+		[
+			[
+				"se",
+				"self	param"
+			],
+			[
+				"nes",
+				"nested_type	function"
+			],
+			[
+				"is_",
+				"is_method"
+			],
+			[
+				"cla",
+				"classes	statement"
+			],
+			[
+				"entit",
+				"entity	forstmt"
+			],
+			[
+				"dis",
+				"dispatch	module"
+			],
+			[
+				"str",
+				"struct	param"
+			],
+			[
+				"anno",
+				"annotations"
+			],
+			[
+				"typ",
+				"types	statement"
+			],
+			[
+				"disp",
+				"dispatcher_name	statement"
+			],
+			[
+				"glo",
+				"globals	function"
+			],
+			[
+				"func",
+				"funcs"
+			],
+			[
+				"fun",
+				"funcs"
+			],
+			[
+				"bue",
+				"buffer	class"
+			],
+			[
+				"te",
+				"textwrap"
+			],
+			[
+				"type",
+				"type_is_sth	function"
+			],
+			[
+				"globa",
+				"globals	function"
+			],
+			[
+				"items",
+				"items_text"
+			],
+			[
+				"tex",
+				"text"
+			],
+			[
+				"is_s",
+				"is_str_ptr	function"
+			],
+			[
+				"set",
+				"setattr	function"
+			],
+			[
+				"met",
+				"methods	statement"
+			],
+			[
+				"en",
+				"entity	forstmt"
+			],
+			[
+				"inpu",
+				"input_params	function"
+			],
+			[
+				"pr",
+				"property	class"
+			],
+			[
+				"fiel",
+				"field"
+			],
+			[
+				"class",
+				"classmethod	class"
+			],
+			[
+				"Indexer",
+				"IndexerCallbacks	statement"
+			],
+			[
+				"ass",
+				"assign	function"
+			],
+			[
+				"_ca",
+				"_callback_struct_ctypes_cast"
+			],
+			[
+				"indexe",
+				"IndexerCallbacks	class"
+			],
+			[
+				"call",
+				"callback	statement"
+			],
+			[
+				"py",
+				"python_cast"
+			],
+			[
+				"ca",
+				"callback_header_text	function"
+			],
+			[
+				"Functio",
+				"FunctionBinding	class"
+			],
+			[
+				"callback",
+				"callback_decorator_text"
+			],
+			[
+				"sette",
+				"setter_text"
+			],
+			[
+				"is_stru",
+				"is_struct"
+			],
+			[
+				"st",
+				"struct	param"
+			],
+			[
+				"me",
+				"methods"
+			],
+			[
+				"base",
+				"bases_text	function"
+			],
+			[
+				"comm",
+				"commons	module"
+			],
+			[
+				"Cla",
+				"ClassGenerator"
+			],
+			[
+				"is_struc",
+				"is_struct_ptr"
+			],
+			[
+				"index",
+				"index_action	statement"
+			],
+			[
+				"create",
+				"create_index_action	function"
+			],
+			[
+				"c",
+				"cursor	function"
+			],
+			[
+				"assertEqual",
+				"assertEqual	function"
+			],
+			[
+				"cursor",
+				"cursor_for_location	function"
+			],
+			[
+				"loca",
+				"location	statement"
+			],
+			[
+				"vis",
+				"visitChildren"
+			],
+			[
+				"add",
+				"add_method"
+			],
+			[
+				"ctype",
+				"ctypes_cast"
+			],
+			[
+				"is_fun",
+				"is_func_ptr	function"
+			],
+			[
+				"is_func",
+				"is_func_ptr"
+			],
+			[
+				"para",
+				"params"
+			],
+			[
+				"ignore",
+				"ignored_params"
+			],
+			[
+				"is_p",
+				"is_pyobject"
+			],
+			[
+				"fla",
+				"flag_field_results"
+			],
+			[
+				"TRans",
+				"TranslationUnit_Flags	class"
+			],
+			[
+				"gen",
+				"gencustom	module"
+			],
+			[
+				"Thre",
+				"THREAD_BACKGROUND_PRIORITY_FOR_INDEXING	statement"
+			],
+			[
+				"Threa",
+				"THREAD_BACKGROUND_PRIORITY_FOR_EDITING	statement"
+			],
+			[
+				"for",
+				"format"
+			],
+			[
+				"unit_",
+				"unit_tests"
+			],
+			[
+				"metho",
+				"methods"
+			],
+			[
+				"generate",
+				"generate_function_name	function"
+			],
+			[
+				"genera",
+				"generate_setter_name	function"
+			],
+			[
+				"sel",
+				"self_class_name"
+			],
+			[
+				"result_",
+				"result_type	statement"
+			],
+			[
+				"Func",
+				"FunctionBinding	class"
+			],
+			[
+				"Fucn",
+				"FunctionBinding	class"
+			],
+			[
+				"Arra",
+				"ArrayPtr	class"
+			],
+			[
+				"Array",
+				"ArrayPtr"
+			],
+			[
+				"fo",
+				"format"
+			],
+			[
+				"ent",
+				"entity	forstmt"
+			],
+			[
+				"is",
+				"is_opaque"
+			],
+			[
+				"funcio",
+				"function"
+			],
+			[
+				"is_c",
+				"is_const"
+			],
+			[
+				"klass",
+				"klass_end	statement"
+			],
+			[
+				"gene",
+				"generate_method_name	function"
+			],
+			[
+				"len",
+				"length_callback	param"
+			],
+			[
+				"input",
+				"input_callback	param"
+			],
+			[
+				"generate_metho",
+				"generate_method_name	function"
+			],
+			[
+				"param",
+				"param_names	statement"
+			],
+			[
+				"P",
+				"ParamDecl	class"
+			],
+			[
+				"par",
+				"param	statement"
+			],
+			[
+				"Para",
+				"ParamTag	class"
+			],
+			[
+				"generate_gette",
+				"generate_getter_name	function"
+			],
+			[
+				"nested",
+				"nested_type"
+			],
+			[
+				"Struct",
+				"StructBinding	class"
+			],
+			[
+				"Enum",
+				"EnumBinding	class"
+			],
+			[
+				"enti",
+				"entity	forstmt"
+			],
+			[
+				"is_f",
+				"is_function"
+			],
+			[
+				"generate_func",
+				"generate_function	function"
+			],
+			[
+				"fil",
+				"filter	function"
+			],
+			[
+				"is_o",
+				"is_void"
+			],
+			[
+				"pra",
+				"params"
+			],
+			[
+				"bin",
+				"binding	statement"
+			],
+			[
+				"ouput",
+				"outputs	statement"
+			],
+			[
+				"decl",
+				"decls"
+			],
+			[
+				"Type",
+				"TypeRef	class"
+			],
+			[
+				"raise",
+				"raise_exception	function"
+			],
+			[
+				"Curs",
+				"Cursor"
+			],
+			[
+				"Cur",
+				"Cursor"
+			],
+			[
+				"gla",
+				"globals	function"
+			],
+			[
+				"f",
+				"format	function"
+			],
+			[
+				"make",
+				"make_cursor_getter	function"
+			],
+			[
+				"ex",
+				"exname	None"
+			],
+			[
+				"File",
+				"File_methods"
+			],
+			[
+				"has",
+				"has_param_of_type	function"
+			],
+			[
+				"Cursor",
+				"Cursor_methods"
+			],
+			[
+				"ha",
+				"has_param_of_type	function"
+			],
+			[
+				"ite",
+				"items	statement"
+			],
+			[
+				"res",
+				"result_type"
+			],
+			[
+				"result",
+				"result_type"
+			],
+			[
+				"ge",
+				"generate_function_body"
+			],
+			[
+				"Fu",
+				"FuncPtr	statement"
+			],
+			[
+				"tup",
+				"tuple_result	param"
+			],
+			[
+				"resul",
+				"result_tuple	statement"
+			],
+			[
+				"functio",
+				"function_args"
+			],
+			[
+				"genere",
+				"generate_function_header	function"
+			],
+			[
+				"void",
+				"is_void_list"
+			],
+			[
+				"filter",
+				"filter_map_named_entities	function"
+			],
+			[
+				"resu",
+				"result"
+			],
+			[
+				"asse",
+				"assertNotEqual	function"
+			],
+			[
+				"assertNotE",
+				"assertNotEqual	function"
+			],
+			[
+				"assertIs",
+				"assertIsInstance	function"
+			]
+		]
+	},
+	"buffers":
+	[
+	],
+	"build_system": "Packages/Python/Python.sublime-build",
+	"build_system_choices":
+	[
+		[
+			[
+				[
+					"Packages/Python/Python.sublime-build",
+					""
+				],
+				[
+					"Packages/Python/Python.sublime-build",
+					"Syntax Check"
+				]
+			],
+			[
+				"Packages/Python/Python.sublime-build",
+				""
+			]
+		],
+		[
+			[
+				[
+					"Packages/Python/Python.sublime-build",
+					""
+				],
+				[
+					"Packages/Python/Python.sublime-build",
+					"Syntax Check"
+				],
+				[
+					"Packages/SublimeREPL/sublimerepl_build_system_hack.sublime-build",
+					""
+				]
+			],
+			[
+				"Packages/Python/Python.sublime-build",
+				""
+			]
+		],
+		[
+			[
+				[
+					"Packages/User/python3.sublime-build",
+					""
+				],
+				[
+					"Packages/User/python3.sublime-build",
+					"Syntax Check"
+				]
+			],
+			[
+				"Packages/User/python3.sublime-build",
+				""
+			]
+		]
+	],
+	"build_varint": "",
+	"command_palette":
+	{
+		"height": 392.0,
+		"last_filter": "",
+		"selected_items":
+		[
+			[
+				"packageresource",
+				"PackageResourceViewer: Extract Package"
+			],
+			[
+				"Package Co",
+				"Package Control: Install Package"
+			],
+			[
+				"Package Control: ins",
+				"Package Control: Install Package"
+			],
+			[
+				"Package Control: remove",
+				"Package Control: Remove Package"
+			],
+			[
+				"Package Control: instal",
+				"Package Control: Install Package"
+			],
+			[
+				"Package Control: insta",
+				"Package Control: Install Package"
+			],
+			[
+				"Package Control: ",
+				"Package Control: Remove Package"
+			],
+			[
+				"Package Control: Re",
+				"Package Control: Remove Package"
+			],
+			[
+				"Package Control: Ins",
+				"Package Control: Install Package"
+			],
+			[
+				"gl",
+				"Glue - Launch"
+			],
+			[
+				"V",
+				"View: Toggle Menu"
+			],
+			[
+				"glue",
+				"Glue - Launch"
+			]
+		],
+		"width": 449.0
+	},
+	"console":
+	{
+		"height": 463.0,
+		"history":
+		[
+			"view.window_to_layout.__doc__",
+			"dir(view.window_to_layout)",
+			"view.window_to_layout",
+			"help(view.window_to_layout)",
+			"view.window_to_layout",
+			"view.window_to",
+			"[print(x) for x in dir(view)]",
+			"dir(view)",
+			"int(False)",
+			"int(True)",
+			"sys.version_info",
+			"import sys",
+			"dir()",
+			"__version__",
+			"dir(window)",
+			"dsad",
+			"sadsad",
+			"code.__doc__",
+			"dir(code)",
+			"print(code)",
+			"print(__doc__)",
+			"__doc__",
+			"dir()",
+			"import code",
+			"dir()",
+			"dir(view)",
+			"dir()",
+			"ls",
+			"for i in range(10):",
+			"for item in dir(sublime):",
+			"for item in dir(sublime)",
+			"for item in dir(sublime): print(item)",
+			"for item in dir(sublime): print(item);",
+			"for item in dir(sublime):",
+			"for item in dir(sublime): print(item);",
+			"dir(sublime)",
+			"dir()",
+			"dir",
+			"sys.version",
+			"import sys",
+			"__versio",
+			"__version__",
+			"ls",
+			"code.CommandCompiler.__doc__",
+			"CommandCompiler.__doc__",
+			"from code import *",
+			"dir(code)",
+			"import code",
+			"dir()",
+			"code.InteractiveInterpreter.__doc__",
+			"code.InteractiveConsole.__doc__",
+			"dir(code.InteractiveConsole)",
+			"dir()",
+			"dir(code.InteractiveConsole)",
+			"dir(code)",
+			"import code",
+			"licence",
+			"import urllib.request,os,hashlib; h = 'eb2297e1a458f27d836c04bb0cbaf282' + 'd0e7a3098092775ccb37ca9d6b2e4b7d'; pf = 'Package Control.sublime-package'; ipp = sublime.installed_packages_path(); urllib.request.install_opener( urllib.request.build_opener( urllib.request.ProxyHandler()) ); by = urllib.request.urlopen( 'http://packagecontrol.io/' + pf.replace(' ', '%20')).read(); dh = hashlib.sha256(by).hexdigest(); print('Error validating download (got %s instead of %s), please try manual install' % (dh, h)) if dh != h else open(os.path.join( ipp, pf), 'wb' ).write(by)",
+			"view.change_count()",
+			"dir(view.settings())",
+			"print(view.settings())",
+			"view.settings()",
+			" view.settings()",
+			"ls",
+			"type([])",
+			"type(b'm'[0])",
+			"type(b'm')",
+			"dsd",
+			"import getpass",
+			"check_output(['pwd'])",
+			"os.chdir('/tmp/')",
+			"import os",
+			"os.chdir('/tmp/')",
+			"from os import *",
+			"os.chdir('/tmp/')",
+			"chdir('/tmp/')",
+			"from os import *",
+			"check_output(['./cd', '..'])",
+			"check_output(['cd', '..'])",
+			"check_output(['pwd'])",
+			"check_call(['pwd'])",
+			"check_call(['cwd'])",
+			"from subprocess import *",
+			"view.set_read_only(False)",
+			"view.set_read_only(True)",
+			"view.sel()[0]",
+			"dir(view.sel()[0])",
+			"dir(view.sel())",
+			"view.sel()[0]",
+			"view.sel()",
+			"view.set_read_only(False)",
+			"view.set_read_only(True)",
+			"dir(sublime_plugin.EventListener)",
+			"dir(sublime_plugin)",
+			"import sublime_plugin",
+			"dir(pty)",
+			"pyt",
+			"import pty",
+			"import pexpect",
+			"check_ouput",
+			"from subprocess import *",
+			"view.set_read_only(False)",
+			"print('\\n'.join(dir(view)))",
+			"'\\n'.join(dir(view))",
+			"dir(view)",
+			"view.set_read_only(True)",
+			"view.show_popup_menu(['foo \\t 32', 'bar bar bar bar'], None)",
+			"view.show_popup_menu(['foo \\t 32', 'bar'], None)",
+			"view.show_popup_menu([['foo'], 'bar'], None)",
+			"view.show_popup_menu(['foo', 'bar'], None)",
+			"view",
+			"window.show_panel()",
+			"show_panel()",
+			"window.show_input_panel(\"caption\", \"initial\", None, None, None)",
+			"window.show_input_panel([\"foo\", \"bar\"], None)",
+			"window.show_quick_panel([\"foo\", \"bar\"], None)",
+			"window.folders()",
+			"window.id()",
+			"del window",
+			"window.id()",
+			"sublime.platform()",
+			"subliem.platform()",
+			"platfor()",
+			"sublime.get_clipboard()",
+			"subliem.get_clipboard()",
+			"sublime.windows()",
+			"windows()",
+			"sublime.error_message(\"foo\")"
+		]
+	},
+	"distraction_free":
+	{
+		"menu_visible": true,
+		"show_minimap": false,
+		"show_open_files": false,
+		"show_tabs": false,
+		"side_bar_visible": false,
+		"status_bar_visible": false
+	},
+	"expanded_folders":
+	[
+		"/home/wojciech/Desktop/haste-format"
+	],
+	"file_history":
+	[
+		"/home/wojciech/Desktop/haste-format/format.cpp",
+		"/home/wojciech/Desktop/haste-format/include/haste/format.hpp",
+		"/home/wojciech/Desktop/haste-format/build.py",
+		"/home/wojciech/.config/sublime-text-3/Packages/User/build.py.sublime-build",
+		"/home/wojciech/resublimer/resublimer.sublime-project",
+		"/home/wojciech/.config/sublime-text-3/Packages/User/python3.sublime-build",
+		"/home/wojciech/.config/sublime-text-3/Packages/User/superb.py",
+		"/home/wojciech/resublimer/install.py",
+		"/home/wojciech/pyclang3/generate.py",
+		"/home/wojciech/Documents/fibonacci.c2k",
+		"/home/wojciech/Documents/hello_world.c2k",
+		"/home/wojciech/Documents/frequency.c2k",
+		"/home/wojciech/Documents/care.txt",
+		"/home/wojciech/pyclang3/pyclang.sublime-project",
+		"/home/wojciech/pyclang3/genfunc.py",
+		"/home/wojciech/pyclang3/bindings.py",
+		"/home/wojciech/pyclang3/annotate.py",
+		"/home/wojciech/pyclang3/scanner.py",
+		"/home/wojciech/pyclang3/ignore.py",
+		"/home/wojciech/pyclang3/link_methods.py",
+		"/home/wojciech/pyclang3/rename.py",
+		"/home/wojciech/pyclang3/dispatch.py",
+		"/home/wojciech/pyclang3/commons.py",
+		"/home/wojciech/pyclang3/function.py",
+		"/home/wojciech/pyclang3/clang-c/Index.h",
+		"/home/wojciech/pyclang3/test/main.cpp",
+		"/home/wojciech/pyclang3/clang.py",
+		"/home/wojciech/pyclang4/types.py",
+		"/home/wojciech/pyclang4/binding.py",
+		"/home/wojciech/pyclang3/genbinding.py",
+		"/home/wojciech/pyclang3/gencustom.py",
+		"/home/wojciech/pyclang3/clang-unit-tests.py",
+		"/home/wojciech/pyclang3/clang.docs.py",
+		"/home/wojciech/.config/sublime-text-3/Packages/User/Default (Linux).sublime-keymap",
+		"/home/wojciech/.config/sublime-text-3/Packages/Default/Default (Linux).sublime-keymap",
+		"/home/wojciech/.config/sublime-text-3/Packages/Default/Preferences.sublime-settings",
+		"/home/wojciech/Desktop/meta.py",
+		"/home/wojciech/.config/sublime-text-3/Packages/User/Preferences.sublime-settings",
+		"/home/wojciech/pyclang3/opaquegen.py",
+		"/home/wojciech/pyclang3/ClassBinding.py",
+		"/home/wojciech/pyclang3/structgen.py",
+		"/home/wojciech/pyclang3/classgen.py",
+		"/usr/local/lib/python3.4/dist-packages/pycparser/c_ast.py",
+		"/home/wojciech/pyclang3/mkbinding.py",
+		"/home/wojciech/pyclang3/funcgen.py",
+		"/home/wojciech/pyclang3/genstruct.py",
+		"/home/wojciech/Documents/songs.txt",
+		"/home/wojciech/pyclang3/genutest.py",
+		"/home/wojciech/pyclang3/names.py",
+		"/home/wojciech/.config/sublime-text-3/Packages/Python/for.sublime-snippet",
+		"/home/wojciech/.config/sublime-text-3/Packages/Python/function.sublime-snippet",
+		"/home/wojciech/.config/sublime-text-3/Packages/Python/if.sublime-snippet",
+		"/home/wojciech/.config/sublime-text-3/Packages/Python/if-__name__-==-'__main__'.sublime-snippet",
+		"/home/wojciech/.config/sublime-text-3/Packages/Python/__magic__.sublime-snippet",
+		"/home/wojciech/.config/sublime-text-3/Packages/Python/method.sublime-snippet",
+		"/home/wojciech/.config/sublime-text-3/Packages/Python/New-Class.sublime-snippet",
+		"/home/wojciech/.config/sublime-text-3/Packages/Python/New-Property.sublime-snippet",
+		"/home/wojciech/.config/sublime-text-3/Packages/Python/Python.sublime-build",
+		"/home/wojciech/.config/sublime-text-3/Packages/Python/Try-Except.sublime-snippet",
+		"/home/wojciech/.config/sublime-text-3/Packages/Python/self.sublime-snippet",
+		"/home/wojciech/.config/sublime-text-3/Packages/Python/Try-Except-Else.sublime-snippet",
+		"/home/wojciech/.config/sublime-text-3/Packages/Python/Try-Except-Else-Finally.sublime-snippet",
+		"/home/wojciech/.config/sublime-text-3/Packages/Python/Try-Except-Finally.sublime-snippet",
+		"/home/wojciech/.config/sublime-text-3/Packages/Python/while.sublime-snippet",
+		"/home/wojciech/.config/sublime-text-3/Packages/Jedi - Python autocompletion/sublime_jedi.sublime-settings",
+		"/home/wojciech/pyclang3/unit_tests.py",
+		"/home/wojciech/pyclang3/genutils.py",
+		"/home/wojciech/pyclang3/test.py",
+		"/home/wojciech/pyclang3/genopaque.py",
+		"/home/wojciech/pyclang3/genenum.py",
+		"/home/wojciech/pyclang3/clang_entities.py",
+		"/home/wojciech/pyclang3/scanned.txt",
+		"/home/wojciech/pyclang3/clangexgen.py",
+		"/home/wojciech/pyclang3/clang_ex.py",
+		"/home/wojciech/pyclang3/clang_ex.template.py",
+		"/home/wojciech/pyclang3/struct_generator.py",
+		"/home/wojciech/pyclang3/func_decl_generators.py",
+		"/home/wojciech/Desktop/generator.py",
+		"/home/wojciech/resublimer/.gitignore",
+		"/home/wojciech/pyclang3/clang-c/Platform.h",
+		"/home/wojciech/pyclang3/common.py",
+		"/home/wojciech/pyclang3/mkbinding2.py",
+		"/home/wojciech/resublimer/clang.py",
+		"/home/wojciech/Documents/szelang",
+		"/home/wojciech/Documents/szelang2",
+		"/home/wojciech/resublimer/resublimer.sublime-workspace",
+		"/home/wojciech/resublimer/test.py",
+		"/home/wojciech/resublimer/clang-c/Index.h",
+		"/home/wojciech/resublimer/clang-py/cindex.py",
+		"/home/wojciech/Desktop/Default/font.py",
+		"/home/wojciech/resublimer/mkbinding.py",
+		"/home/wojciech/pyclang3/README.md",
+		"/home/wojciech/resublimer/sketch.py",
+		"/home/wojciech/Desktop/Default/Main.sublime-menu",
+		"/home/wojciech/Downloads/cfe-3.6.2.src/LICENSE.TXT",
+		"/home/wojciech/resublimer/test/main.cpp",
+		"/home/wojciech/Desktop/Default/Tab Context.sublime-menu",
+		"/home/wojciech/resublimer/resublimer/Context.sublime-menu",
+		"/home/wojciech/Desktop/Default/Context.sublime-menu",
+		"/home/wojciech/resublimer/resublimer/__init__.py",
+		"/home/wojciech/Downloads/cfe-3.6.2.src/README.txt",
+		"/home/wojciech/Desktop/Default/comment.py",
+		"/home/wojciech/resublimer/clang-c/CXString.h",
+		"/home/wojciech/resublimer/clang-c/Platform.h",
+		"/usr/local/lib/python3.4/dist-packages/pycparser/__init__.py",
+		"/home/wojciech/resublimer/pycparser",
+		"/home/wojciech/resublimer/clang/cindex.py",
+		"/home/wojciech/resublimer/time.h",
+		"/usr/local/lib/python3.4/dist-packages/pycparser/c_parser.py",
+		"/home/wojciech/resublimer/clang-c/CXCompilationDatabase.h",
+		"/usr/lib/llvm-3.4/include/clang-c/Index.h",
+		"/usr/lib/llvm-3.4/include/clang-c/Platform.h",
+		"/usr/lib/llvm-3.4/include/clang-c/CXString.h",
+		"/home/wojciech/resublimer/resublimer/clang/cindex.py",
+		"/home/wojciech/resublimer/clang/__init__.py",
+		"/home/wojciech/resublimer/resublimer/clang/__init__.py",
+		"/home/wojciech/Desktop/main.c",
+		"/home/wojciech/Desktop/flash.py",
+		"/home/wojciech/Downloads/USBasp.rules",
+		"/usr/local/lib/python2.7/dist-packages/clang/cindex.py",
+		"/home/wojciech/Desktop/main.py",
+		"/home/wojciech/resublimer/README.md",
+		"/home/wojciech/resublimer/project.hpp",
+		"/media/wojciech/680A6FD40A6F9E36/Users/Wojciech/Documents/songs.txt",
+		"/media/wojciech/680A6FD40A6F9E36/Users/Wojciech/Documents/story.txt",
+		"/home/wojciech/resublimer/build.py",
+		"/home/wojciech/resublimer/main.cpp",
+		"/home/wojciech/resublimer/cmake/Modules/Findclang.cmake"
+	],
+	"find":
+	{
+		"height": 35.0
+	},
+	"find_in_files":
+	{
+		"height": 93.0,
+		"where_history":
+		[
+			""
+		]
+	},
+	"find_state":
+	{
+		"case_sensitive": true,
+		"find_history":
+		[
+			"nested_name",
+			"nested_name\\",
+			"Client",
+			"Flags",
+			"ArrayPtr",
+			"self",
+			"convert_name",
+			"is_function_ptr",
+			"is_func_ptr",
+			"property",
+			"):\n",
+			"is_pyobject",
+			"NONE",
+			"__del__",
+			"PlatformAvailability",
+			"_IdxDeclInfo",
+			"UnsaveDFile",
+			"class Cursor",
+			"Cursor",
+			"Cursor:",
+			"_Cursor",
+			"num_",
+			"1188",
+			"_IdxDeclInfo",
+			"_IndexerCallbacks",
+			"_Index",
+			"foo()",
+			"_IndexerCallbacks",
+			"FunctionBinding",
+			"Indexer",
+			"IndexerCall",
+			"params",
+			"_struct(",
+			"_struct",
+			"_opaque",
+			"_SourceLocation",
+			"decl",
+			"predecl",
+			"decl",
+			"IndexerCallbacks",
+			"Index",
+			"indexercallbacks",
+			"visitor",
+			"declaration",
+			"cursor",
+			"File",
+			"file_location",
+			"CXFile",
+			"_getFileName",
+			"equals",
+			"TestSourceLocation",
+			"file(self)",
+			"SourceLocation",
+			"GlobalOptFlags",
+			"dire",
+			"money",
+			"con te partiro",
+			"_Cursor",
+			"is_ini",
+			"is_inii",
+			"super",
+			"_Cursor",
+			"self.assertTrue(False)",
+			"is_func_ptr",
+			"IS_FUNC_PTR",
+			"output",
+			"params",
+			"itr",
+			"options",
+			"Token(",
+			"Token",
+			"Index(_",
+			"GlobalOpt",
+			"pprint",
+			"generate_method_name",
+			"self_class",
+			"python_cast",
+			"ctypes_cast",
+			"DiagnosticSet",
+			"generate_function_header",
+			"generate_loader",
+			"TranslationUnit",
+			"c_void_p",
+			"c_pointer",
+			"_to_array",
+			"= xlist",
+			"array[:]",
+			"python_cast",
+			"Pointer",
+			"ctypes_cast",
+			"Index(_",
+			"TranslationUnit",
+			"generate_struct_fields",
+			"UnsavedFile(",
+			"UnsaveDFile",
+			"dispose",
+			"POINTER(c_",
+			"def set_",
+			"generate_sette",
+			"80",
+			".Unknown",
+			"to",
+			"Index",
+			"is_method",
+			"is_struct_ptr",
+			"result_type",
+			"__del__",
+			"kind",
+			"Function",
+			"CXDiagnosticSet",
+			"getDiagnosticSetFromTU",
+			"CompletionString",
+			"<function>",
+			"generate_structure_fields",
+			"convert_na",
+			"pointer",
+			"clang_createTranslationUnitFromSourceFile",
+			"['const']",
+			"CXUnsavedFile",
+			"const",
+			"?",
+			"NoneType",
+			"Index",
+			"Indec",
+			"emit",
+			"CodeCompletionRes",
+			"mk_property",
+			"isBitField"
+		],
+		"highlight": true,
+		"in_selection": false,
+		"preserve_case": false,
+		"regex": false,
+		"replace_history":
+		[
+			"function",
+			"is_function_ptr",
+			"fields",
+			"definition",
+			"predef",
+			"self.assertTrue(True)",
+			"params",
+			"self.params",
+			"i",
+			"self_class_name",
+			"type",
+			"self",
+			"Kind",
+			".id",
+			".kind",
+			"TypeId",
+			"None, Type",
+			"pytype_to_str",
+			","
+		],
+		"reverse": false,
+		"show_context": true,
+		"use_buffer2": true,
+		"whole_word": false,
+		"wrap": true
+	},
+	"groups":
+	[
+		{
+			"sheets":
+			[
+			]
+		}
+	],
+	"incremental_find":
+	{
+		"height": 25.0
+	},
+	"input":
+	{
+		"height": 33.0
+	},
+	"layout":
+	{
+		"cells":
+		[
+			[
+				0,
+				0,
+				1,
+				1
+			]
+		],
+		"cols":
+		[
+			0.0,
+			1.0
+		],
+		"rows":
+		[
+			0.0,
+			1.0
+		]
+	},
+	"menu_visible": true,
+	"output.exec":
+	{
+		"height": 222.0
+	},
+	"output.find_results":
+	{
+		"height": 0.0
+	},
+	"output.ouput.exe":
+	{
+		"height": 0.0
+	},
+	"output.ouput.exec":
+	{
+		"height": 0.0
+	},
+	"output.output.exec":
+	{
+		"height": 0.0
+	},
+	"output.unsaved_changes":
+	{
+		"height": 362.0
+	},
+	"pinned_build_system": "Packages/User/build.py.sublime-build",
+	"project": "haste-format.sublime-project",
+	"replace":
+	{
+		"height": 64.0
+	},
+	"save_all_on_build": true,
+	"select_file":
+	{
+		"height": 0.0,
+		"last_filter": "",
+		"selected_items":
+		[
+			[
+				"functio",
+				"function.py"
+			],
+			[
+				"sublime-",
+				"pyclang.sublime-project"
+			],
+			[
+				"scan",
+				"scanner.py"
+			],
+			[
+				"dispa",
+				"dispatch.py"
+			],
+			[
+				"genbin",
+				"genbinding.py"
+			],
+			[
+				"name",
+				"rename.py"
+			],
+			[
+				"sublim",
+				"pyclang.sublime-project"
+			],
+			[
+				"scanne",
+				"scanner.py"
+			],
+			[
+				"sca",
+				"scanner.py"
+			],
+			[
+				"clang.d",
+				"clang.docs.py"
+			],
+			[
+				"gencu",
+				"gencustom.py"
+			],
+			[
+				"clan",
+				"clang.py"
+			],
+			[
+				"class",
+				"ClassBinding.py"
+			],
+			[
+				"funcge",
+				"funcgen.py"
+			],
+			[
+				"struct",
+				"structgen.py"
+			],
+			[
+				"genstr",
+				"genstruct.py"
+			],
+			[
+				"main",
+				"test/main.cpp"
+			],
+			[
+				"uni",
+				"unit_tests.py"
+			],
+			[
+				"test",
+				"test.py"
+			],
+			[
+				"pycl",
+				"pyclang.sublime-project"
+			],
+			[
+				"genuti",
+				"genutils.py"
+			],
+			[
+				"func",
+				"funcgen.py"
+			],
+			[
+				"genu",
+				"genutils.py"
+			],
+			[
+				"structge",
+				"structgen.py"
+			],
+			[
+				"subl",
+				"pyclang.sublime-project"
+			],
+			[
+				"mkbin",
+				"mkbinding.py"
+			],
+			[
+				"",
+				"pyclang.sublime-project"
+			],
+			[
+				"py",
+				"pyclang.sublime-project"
+			],
+			[
+				"comm",
+				"commons.py"
+			],
+			[
+				"gene",
+				"clang_entities.py"
+			],
+			[
+				"struc",
+				"structgen.py"
+			],
+			[
+				"pla",
+				"clang-c/Platform.h"
+			],
+			[
+				"inde",
+				"clang-c/Index.h"
+			],
+			[
+				"clang",
+				"clang_ex.py"
+			],
+			[
+				"te",
+				"test.py"
+			],
+			[
+				"sublime",
+				"pyclang.sublime-project"
+			],
+			[
+				"index",
+				"clang-c/Index.h"
+			],
+			[
+				"__",
+				"resublimer/__init__.py"
+			],
+			[
+				"__ini",
+				"resublimer/__init__.py"
+			],
+			[
+				"pycpa",
+				"pycparser"
+			],
+			[
+				"proje",
+				"resublimer.sublime-project"
+			],
+			[
+				"tes",
+				"test.py"
+			],
+			[
+				"platfo",
+				"clang-c/Platform.h"
+			],
+			[
+				"index.",
+				"clang-c/Index.h"
+			],
+			[
+				".gi",
+				".gitignore"
+			],
+			[
+				"cmakelists.txt",
+				"CMakeLists.txt"
+			],
+			[
+				"cmak",
+				"CMakeLists.txt"
+			],
+			[
+				"cmakel",
+				"CMakeLists.txt"
+			],
+			[
+				"cma",
+				"CMakeLists.txt"
+			],
+			[
+				"main.cpp",
+				"main.cpp"
+			]
+		],
+		"width": 0.0
+	},
+	"select_project":
+	{
+		"height": 500.0,
+		"last_filter": "",
+		"selected_items":
+		[
+		],
+		"width": 380.0
+	},
+	"select_symbol":
+	{
+		"height": 0.0,
+		"last_filter": "",
+		"selected_items":
+		[
+		],
+		"width": 0.0
+	},
+	"selected_group": 0,
+	"settings":
+	{
+		"last_automatic_layout":
+		[
+			[
+				0,
+				0,
+				1,
+				1
+			]
+		]
+	},
+	"show_minimap": false,
+	"show_open_files": false,
+	"show_tabs": true,
+	"side_bar_visible": true,
+	"side_bar_width": 269.0,
+	"status_bar_visible": true,
+	"template_settings":
+	{
+		"max_columns": 2
+	}
+}

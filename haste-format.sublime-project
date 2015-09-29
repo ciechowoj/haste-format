@@ -1,0 +1,20 @@
+{
+	"build_systems":
+	[
+		{
+			"cmd":
+			[
+				"${project_path}/build.py"
+			],
+			"name": "Build format...",
+			"working_dir": "${project_path}",
+			"shell": "true"
+		}
+	],
+	"folders":
+	[
+		{
+			"path": "."
+		}
+	]
+}
