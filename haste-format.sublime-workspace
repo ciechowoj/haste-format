@@ -4,6 +4,14 @@
 		"selected_items":
 		[
 			[
+				"libray",
+				"library_flage	statement"
+			],
+			[
+				"IN",
+				"include_flags	statement"
+			],
+			[
 				"se",
 				"self	param"
 			],
@@ -506,19 +514,44 @@
 			[
 				"asse",
 				"assertNotEqual	function"
-			],
-			[
-				"assertNotE",
-				"assertNotEqual	function"
-			],
-			[
-				"assertIs",
-				"assertIsInstance	function"
 			]
 		]
 	},
 	"buffers":
 	[
+		{
+			"file": "unit_tests/main.cpp",
+			"settings":
+			{
+				"buffer_size": 170,
+				"line_ending": "Unix",
+				"name": "#include <gtest/gtest.hpp>"
+			}
+		},
+		{
+			"file": "include/haste/format.hpp",
+			"settings":
+			{
+				"buffer_size": 132,
+				"line_ending": "Unix"
+			}
+		},
+		{
+			"file": "format.cpp",
+			"settings":
+			{
+				"buffer_size": 119,
+				"line_ending": "Unix"
+			}
+		},
+		{
+			"file": "build.py",
+			"settings":
+			{
+				"buffer_size": 1005,
+				"line_ending": "Unix"
+			}
+		}
 	],
 	"build_system": "Packages/Python/Python.sublime-build",
 	"build_system_choices":
@@ -780,15 +813,20 @@
 	},
 	"expanded_folders":
 	[
-		"/home/wojciech/Desktop/haste-format"
+		"/home/wojciech/Desktop/haste-format",
+		"/home/wojciech/Desktop/haste-format/include",
+		"/home/wojciech/Desktop/haste-format/include/haste"
 	],
 	"file_history":
 	[
+		"/home/wojciech/Desktop/haste-format/build.py",
+		"/home/wojciech/.ssh/id_rsa.pub",
+		"/home/wojciech/Desktop/haste-format/.gitignore",
+		"/home/wojciech/Desktop/haste-format/haste-format.sublime-project",
+		"/home/wojciech/resublimer/resublimer.sublime-project",
 		"/home/wojciech/Desktop/haste-format/format.cpp",
 		"/home/wojciech/Desktop/haste-format/include/haste/format.hpp",
-		"/home/wojciech/Desktop/haste-format/build.py",
 		"/home/wojciech/.config/sublime-text-3/Packages/User/build.py.sublime-build",
-		"/home/wojciech/resublimer/resublimer.sublime-project",
 		"/home/wojciech/.config/sublime-text-3/Packages/User/python3.sublime-build",
 		"/home/wojciech/.config/sublime-text-3/Packages/User/superb.py",
 		"/home/wojciech/resublimer/install.py",
@@ -908,10 +946,7 @@
 		"/home/wojciech/resublimer/README.md",
 		"/home/wojciech/resublimer/project.hpp",
 		"/media/wojciech/680A6FD40A6F9E36/Users/Wojciech/Documents/songs.txt",
-		"/media/wojciech/680A6FD40A6F9E36/Users/Wojciech/Documents/story.txt",
-		"/home/wojciech/resublimer/build.py",
-		"/home/wojciech/resublimer/main.cpp",
-		"/home/wojciech/resublimer/cmake/Modules/Findclang.cmake"
+		"/media/wojciech/680A6FD40A6F9E36/Users/Wojciech/Documents/story.txt"
 	],
 	"find":
 	{
@@ -1094,8 +1129,123 @@
 	"groups":
 	[
 		{
+			"selected": 0,
 			"sheets":
 			[
+				{
+					"buffer": 0,
+					"file": "unit_tests/main.cpp",
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 170,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								162,
+								162
+							]
+						],
+						"settings":
+						{
+							"auto_name": "#include <gtest/gtest.hpp>",
+							"syntax": "Packages/C++/C++.tmLanguage"
+						},
+						"translation.x": 0.0,
+						"translation.y": 0.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 0,
+					"type": "text"
+				},
+				{
+					"buffer": 1,
+					"file": "include/haste/format.hpp",
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 132,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								115,
+								115
+							]
+						],
+						"settings":
+						{
+							"syntax": "Packages/C++/C++.tmLanguage"
+						},
+						"translation.x": 0.0,
+						"translation.y": 0.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 2,
+					"type": "text"
+				},
+				{
+					"buffer": 2,
+					"file": "format.cpp",
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 119,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								110,
+								110
+							]
+						],
+						"settings":
+						{
+							"syntax": "Packages/C++/C++.tmLanguage"
+						},
+						"translation.x": 0.0,
+						"translation.y": 0.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 3,
+					"type": "text"
+				},
+				{
+					"buffer": 3,
+					"file": "build.py",
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 1005,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								671,
+								671
+							]
+						],
+						"settings":
+						{
+							"syntax": "Packages/Python/Python.tmLanguage",
+							"translate_tabs_to_spaces": false
+						},
+						"translation.x": -0.0,
+						"translation.y": 102.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 1,
+					"type": "text"
+				}
 			]
 		}
 	],
@@ -1132,7 +1282,7 @@
 	"menu_visible": true,
 	"output.exec":
 	{
-		"height": 222.0
+		"height": 363.0
 	},
 	"output.find_results":
 	{
@@ -1154,7 +1304,7 @@
 	{
 		"height": 362.0
 	},
-	"pinned_build_system": "Packages/User/build.py.sublime-build",
+	"pinned_build_system": "Build format...",
 	"project": "haste-format.sublime-project",
 	"replace":
 	{
