@@ -31,7 +31,7 @@ struct _format_index_t {
 };
 
 const char* _format_parse_name(
-	size_t& index, 
+	int& index, 
 	vector<_format_index_t>& indices, 
 	const char* begin, 
 	const char* end);
@@ -47,18 +47,10 @@ const char* _format_parse_spec(
 	const char* end);
 
 const char* _format_parse_field(
-	size_t& index, 
+	int& index, 
 	vector<_format_index_t>& indices, 
 	char& conv, 
 	_format_spec_t& spec, 
-	const char* begin, 
-	const char* end);
-
-const char* _format_parse_field(
-	size_t& index, 
-	vector<_format_index_t>& indices, 
-	char& conv, 
-	string& spec, 
 	const char* begin, 
 	const char* end);
 

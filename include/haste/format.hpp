@@ -40,7 +40,7 @@ template <class T> struct _format_param : public _format_param_base {
 	
 };
 
-template <> class _format_param<int> : public _format_param_base {
+template <> struct _format_param<int> : public _format_param_base {
 	_format_param(int x) { _int = x; _id = id::_int; }
 };
 

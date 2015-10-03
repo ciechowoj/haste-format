@@ -6,7 +6,7 @@ using namespace haste;
 
 TEST(haste_format, _format_parse_name)
 {
-	size_t index = -1;
+	int index = -1;
 	vector<_format_index_t> indices;
 	const char* begin, *end;
 
@@ -317,7 +317,7 @@ TEST(haste_format, _format_parse_spec_MULTIPLE)
 
 TEST(haste_format, _format_parse_field)
 {
-	size_t index;
+	int index;
 	vector<_format_index_t> indices;
 	char conv;
 	_format_spec_t spec;
@@ -421,69 +421,7 @@ TEST(haste_format, _format_parse_field)
 	#undef EXPECT_FIELD_PARSED
 }
 
-TEST(haste_format, _format_parse_field2)
-{
-	size_t index;
-	vector<_format_index_t> indices;
-	char conv;
-	string spec;
-	const char* begin, *end;
-
-	#define EXPECT_FIELD_PARSED(expected_spec, expected_end, name) \
-		index = -1; \
-		indices.clear(); \
-		conv = 0; \
-		spec.clear(); \
-		begin = name; \
-		end = begin + _strlen(begin); \
-		ASSERT_EQ(expected_end, *_format_parse_field(index, indices, conv, spec, begin, end)); \
-		EXPECT_EQ(expected_spec, spec);
-
-	EXPECT_FIELD_PARSED("w=-#0123,.34X", '\0', "123[123][abb]!s:w=-#0123,.34X");
-	ASSERT_EQ(2, indices.size());
-	EXPECT_EQ(123, index);
-	EXPECT_EQ("123", string(indices[0].begin, indices[0].end));
-	EXPECT_TRUE(indices[0].is_integer);
-	EXPECT_EQ("abb", string(indices[1].begin, indices[1].end));
-	EXPECT_FALSE(indices[1].is_integer);
-	EXPECT_EQ('s', conv);
-
-	EXPECT_FIELD_PARSED("w=-#0123,.34X", '\0', "!s:w=-#0123,.34X");
-	EXPECT_EQ(-1, index);
-	ASSERT_EQ(0, indices.size());
-	EXPECT_EQ('s', conv);
-	
-	EXPECT_FIELD_PARSED("w=-#0123,.34X", '\0', "123[123][abb]:w=-#0123,.34X");
-	ASSERT_EQ(2, indices.size());
-	EXPECT_EQ(123, index);
-	EXPECT_EQ("123", string(indices[0].begin, indices[0].end));
-	EXPECT_TRUE(indices[0].is_integer);
-	EXPECT_EQ("abb", string(indices[1].begin, indices[1].end));
-	EXPECT_FALSE(indices[1].is_integer);
-	EXPECT_EQ(0, conv);
-	
-	EXPECT_FIELD_PARSED("", '\0', "123[123][abb]!s");
-	ASSERT_EQ(2, indices.size());
-	EXPECT_EQ(123, index);
-	EXPECT_EQ("123", string(indices[0].begin, indices[0].end));
-	EXPECT_TRUE(indices[0].is_integer);
-	EXPECT_EQ("abb", string(indices[1].begin, indices[1].end));
-	EXPECT_FALSE(indices[1].is_integer);
-	EXPECT_EQ('s', conv);
-
-	EXPECT_FIELD_PARSED("w=-#0123,.34X", '\0', "123[123][abb]:w=-#0123,.34X");
-	ASSERT_EQ(2, indices.size());
-	EXPECT_EQ(123, index);
-	EXPECT_EQ("123", string(indices[0].begin, indices[0].end));
-	EXPECT_TRUE(indices[0].is_integer);
-	EXPECT_EQ("abb", string(indices[1].begin, indices[1].end));
-	EXPECT_FALSE(indices[1].is_integer);
-	EXPECT_EQ(0, conv);
-	
-	#undef EXPECT_FIELD_PARSED
-}
-
-TEST(haste_format, _0) {
+TEST(format, escape_sequences) {
 	EXPECT_EQ("", format(""));
 	EXPECT_EQ("A", format("A"));
 
@@ -492,12 +430,16 @@ TEST(haste_format, _0) {
 	EXPECT_EQ("{}", format("{{}}"));
 }
 
-TEST(haste_format, unmatched_braces)
+TEST(format, unmatched_braces)
+{
+	EXPECT_THROW(format("}"), std::invalid_argument);
+	EXPECT_THROW(format("{"), std::invalid_argument);
+}
+
+TEST(format, automatic_numbering) 
 {
 
-	EXPECT_THROW(format("}"), std::invalid_argument);
-
-
+	EXPECT_THROW(format("{}{0}", 0, 1), std::invalid_argument);
 
 }
 

@@ -32,7 +32,7 @@ inline bool is_digit(char c) {
 }
 
 const char* _format_parse_name(
-	size_t& index, 
+	int& index, 
 	vector<_format_index_t>& indices, 
 	const char* begin, 
 	const char* end)
@@ -226,7 +226,7 @@ const char* _format_parse_spec(
 }
 
 const char* _format_parse_field(
-	size_t& index, 
+	int& index, 
 	vector<_format_index_t>& indices, 
 	char& conv, 
 	_format_spec_t& spec, 
@@ -240,11 +240,12 @@ const char* _format_parse_field(
 	return itr;
 }
 
-const char* _format_parse_field(
-	size_t& index, 
+const char* _format_preparse_field(
+	int& index, 
 	vector<_format_index_t>& indices, 
 	char& conv, 
-	string& spec, 
+	const char*& spec_begin,
+	const char*& spec_end,
 	const char* begin, 
 	const char* end)
 {
@@ -258,22 +259,64 @@ const char* _format_parse_field(
 		while (itr < end && *itr != '{' && *itr != '}') {
 			++itr;
 		}
+		
+		spec_begin = jtr;
+		spec_begin = itr;
+	}
 
-		spec.assign(jtr, itr);
+	if (itr < end) {
+		if (*itr != '}') {
+			throw std::invalid_argument("Expected '}' after replacement field.");
+		}
+		++itr;
 	}
 	else {
-		spec.clear();
+		throw std::invalid_argument("Expected '}' before end of string.");
 	}
 
 	return itr;
 }
 
-const char* _replace_field(string& result, const char* itr, const _format_params_desc& desc) {
-	const char* end = desc.format_end;
+const char* _replace_field(
+	string& result,
+	int& automatic,
+	const char* format_begin,
+	const char* format_end,
+	const _format_param_base* params_begin,
+	const _format_param_base* params_end)
+{
+	const char* itr = format_begin;
 
-	end = end;
+	int index = -1;
+	vector<_format_index_t> indices; 
+	char conv = 0;
+	const char* spec_begin = nullptr;
+	const char* spec_end = nullptr;
+	
+	itr = _format_preparse_field(
+		index,
+		indices,
+		conv,
+		spec_begin,
+		spec_end,
+		format_begin,
+		format_end);
 
-	return ++itr;
+	if (index == -1) {
+		index = ++automatic;
+	}
+	else if (automatic != -1) {
+		throw std::invalid_argument("Cannot switch from automatic to manual field numbering.");
+	}
+
+	if (params_begin + index < params_end) {
+
+	}
+	else {
+		throw std::out_of_range("Too few params passed.");
+	}
+
+	return itr;
 }
 
 string _format(const _format_params_desc& desc) {
@@ -281,6 +324,7 @@ string _format(const _format_params_desc& desc) {
 	const char* end = desc.format_end;
 
 	string result;
+	int automatic = -1;
 	result.reserve(end - begin);
 
 	const char* itr = begin;
@@ -296,20 +340,26 @@ string _format(const _format_params_desc& desc) {
 		result.append(itr, jtr);
 		itr = jtr;
 
-		if (jtr < end) {
-			if(*jtr == '{') {
-				if (jtr + 1 < end && jtr[1] == '{') {
+		if (itr < end) {
+			if(*itr == '{') {
+				if (itr + 1 < end && itr[1] == '{') {
 					result.push_back('{');
-					itr = jtr + 2;
+					itr = itr + 2;
 				}
 				else {
-					itr = _replace_field(result, itr, desc);
+					itr = _replace_field(
+						result,
+						automatic,
+						itr + 1,
+						end,
+						desc.params_begin,
+						desc.params_end);
 				}
 			}
-			else if (*jtr == '}') {
-				if (jtr + 1 < end && jtr[1] == '}') {
+			else if (*itr == '}') {
+				if (itr + 1 < end && itr[1] == '}') {
 					result.push_back('}');
-					itr = jtr + 2;
+					itr += 2;
 				}
 				else {
 					throw std::invalid_argument("Single '}' encountered in format string.");
