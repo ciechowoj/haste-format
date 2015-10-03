@@ -68,19 +68,4 @@ template <class... Params> string format(const char* format_string, const Params
 	return _format(desc);
 }
 
-
-
-
-
-
 }
-
-
-
-
-
-
-
-
-
-
