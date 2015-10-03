@@ -30,3 +30,7 @@
 
 # Google Test
 googletest*
+
+# Sublime Text
+*.sublime-workspace
+
