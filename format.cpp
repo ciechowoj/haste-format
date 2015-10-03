@@ -277,9 +277,101 @@ const char* _format_preparse_field(
 	return itr;
 }
 
-const char* _replace_field(
+static const int unknown_mode = -1;
+static const int auto_mode = 0;
+static const int manual_mode = 1;
+
+static const int null_id = 0;
+static const int bool_id = 1;
+static const int char_id = 2;
+static const int schar_id = 3;
+static const int uchar_id = 4;
+static const int char16_t_t = 5;
+static const int char32_t_t = 6;
+static const int wchar_t_t = 7;
+static const int short_id = 8;
+static const int ushort_id = 9;
+static const int int_id = 10;
+static const int uint_id = 11;
+static const int long_id = 12;
+static const int ulong_id = 13;
+static const int llong_id = 14;
+static const int ullong_id = 15;
+static const int float_id = 16;
+static const int double_id = 17;
+static const int std_string_id = 18;
+static const int c_string_id = 19;
+static const int to_string_id = 20;
+
+static const char* type_names[] = {
+	"std::nullptr_t",
+	"bool",
+	"char",
+	"signed char",
+	"unsigned char",
+	"char16_t",
+	"char32_t",
+	"wchar_t",
+	"short",
+	"unsigned short",
+	"int",
+	"unsinged int",
+	"long",
+	"unsigned long",
+	"long long",
+	"unsinged long long",
+	"float",
+	"double",
+	"std::string",
+	"const char*",
+};
+
+static void _replace_field(
 	string& result,
-	int& automatic,
+	const vector<_format_index_t>& indices,
+	char conv,
+	const char* spec_begin,
+	const char* spec_end,
+	const _format_param_base& param)
+{
+	if (!indices.empty() && param.id <= c_string_id) {
+		char buffer[64];
+		::strcpy(buffer, type_names[param.id]);
+		::strcat(buffer, " is not indexable.");
+		throw std::invalid_argument(buffer);
+	}
+
+	switch(param.id) {
+	case null_id:
+		result.append("nullptr");
+		break;
+	case char_id:
+		break;
+	case bool_id:
+		break;
+	case int_id:
+		break;
+	case uint_id:
+		break;
+	case llong_id:
+		break;
+	case ullong_id:
+		break;
+	case double_id:
+		break;
+	case std_string_id:
+		break;
+	case c_string_id:
+		break;
+	case to_string_id:
+		break;
+	}
+}
+
+static const char* _replace_field(
+	string& result,
+	int& prev,
+	int& mode,
 	const char* format_begin,
 	const char* format_end,
 	const _format_param_base* params_begin,
@@ -302,15 +394,25 @@ const char* _replace_field(
 		format_begin,
 		format_end);
 
-	if (index == -1) {
-		index = ++automatic;
+	if (index == -1 && mode != manual_mode) {
+		index = ++prev;
+		mode = auto_mode;
 	}
-	else if (automatic != -1) {
-		throw std::invalid_argument("Cannot switch from automatic to manual field numbering.");
+	else if (index != -1 && mode != auto_mode) {
+		mode = manual_mode;
+	}
+	else {
+		throw std::invalid_argument("Cannot switch between automatic and manual field numbering.");
 	}
 
 	if (params_begin + index < params_end) {
-
+		_replace_field(
+			result, 
+			indices,
+			conv,
+			spec_begin,
+			spec_end,
+			params_begin[index]);
 	}
 	else {
 		throw std::out_of_range("Too few params passed.");
@@ -324,7 +426,8 @@ string _format(const _format_params_desc& desc) {
 	const char* end = desc.format_end;
 
 	string result;
-	int automatic = -1;
+	int prev = -1;
+	int mode = unknown_mode;
 	result.reserve(end - begin);
 
 	const char* itr = begin;
@@ -349,7 +452,8 @@ string _format(const _format_params_desc& desc) {
 				else {
 					itr = _replace_field(
 						result,
-						automatic,
+						prev,
+						mode,
 						itr + 1,
 						end,
 						desc.params_begin,

@@ -438,8 +438,20 @@ TEST(format, unmatched_braces)
 
 TEST(format, automatic_numbering) 
 {
-
 	EXPECT_THROW(format("{}{0}", 0, 1), std::invalid_argument);
+	EXPECT_THROW(format("{0}{}", 0, 1), std::invalid_argument);
+}
+
+TEST(format, not_indexable)
+{
+	EXPECT_THROW(format("{0[0]}", 0), std::invalid_argument);
+	EXPECT_THROW(format("{0[0]}", '\0'), std::invalid_argument);
+	EXPECT_THROW(format("{0[0]}", "string"), std::invalid_argument);
+}
+
+TEST(format, format_nullptr) {
+
+	EXPECT_EQ("nullptr", format("{}", nullptr));
 
 }
 
