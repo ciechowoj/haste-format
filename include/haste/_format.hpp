@@ -8,11 +8,20 @@ using std::vector;
 
 struct _format_spec_t {
 	string fill;
-	int width;
-	int precision;
-	char align;
-	char sign;
-	char type;
+	int width = 0;
+	int precision = 0;
+	char align = 0;
+	char sign = 0;
+	char type = 0;
+	bool hash : 1;
+	bool zero : 1;
+	bool comma : 1;
+
+	_format_spec_t()
+		: hash(false)
+		, zero(false)
+		, comma(false) 
+		{ }
 };
 
 struct _format_index_t {
@@ -34,6 +43,22 @@ const char* _format_parse_conv(
 
 const char* _format_parse_spec(
 	_format_spec_t& spec, 
+	const char* begin, 
+	const char* end);
+
+const char* _format_parse_field(
+	size_t& index, 
+	vector<_format_index_t>& indices, 
+	char& conv, 
+	_format_spec_t& spec, 
+	const char* begin, 
+	const char* end);
+
+const char* _format_parse_field(
+	size_t& index, 
+	vector<_format_index_t>& indices, 
+	char& conv, 
+	string& spec, 
 	const char* begin, 
 	const char* end);
 

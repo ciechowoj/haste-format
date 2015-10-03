@@ -23,8 +23,8 @@ using std::max;
 // precision   ::=  integer
 // type        ::=  "b" | "c" | "d" | "e" | "E" | "f" | "F" | "g" | "G" | "n" | "o" | "s" | "x" | "X" | "%"
 
-inline size_t ord(char c) {
-	return size_t(c - '0');
+inline unsigned char ord(char c) {
+	return (unsigned char)(c - '0');
 }
 
 inline bool is_digit(char c) {
@@ -100,6 +100,7 @@ const char* _format_parse_conv(
 
 	if (itr < end && *itr == '!') {
 		++itr;
+
 		if (itr < end && is_conv(*itr)) {
 			conv = *itr;
 			++itr;
@@ -112,11 +113,43 @@ const char* _format_parse_conv(
 	return itr;
 }
 
-const char* _format_parse_spec(_format_spec_t& spec, 
+inline bool is_align(char c) {
+	return c == '<' || c == '>' || c == '=' || c == '^';
+}
+
+inline bool is_sign(char c) {
+	return c == '+' || c == '-' || c == ' ';
+}
+
+inline bool is_type(char c) {
+	static char const begin[] = "bcdeEfFgGnos%xX";
+	static char const *const end = begin + sizeof(begin);
+
+	for (const char* itr = begin; itr < end; ++itr) {
+		if (*itr == c) {
+			return true;
+		}
+	}
+
+	return false;
+}
+
+inline const char* skip_utf8(const char* begin, const char* end) {
+	if (begin < end) {
+		return begin + 1;
+	}
+	else {
+		return begin;
+	}
+}
+
+const char* _format_parse_spec(
+	_format_spec_t& spec, 
 	const char* begin, 
 	const char* end)
 {
 	// replacement_field ::=  "{" [field_name] ["!" conversion] [":" format_spec] "}"
+
 	// format_spec ::=  [[fill]align][sign][#][0][width][,][.precision][type]
 	// fill        ::=  <a character other than '{' or '}'>
 	// align       ::=  "<" | ">" | "=" | "^"
@@ -127,7 +160,112 @@ const char* _format_parse_spec(_format_spec_t& spec,
 
 	const char* itr = begin;
 
+	if (itr < end && *itr == ':') {
+		++itr;
 
+		const char* jtr = skip_utf8(itr, end);
+		if (jtr < end && is_align(*jtr)) {
+			if (*itr != '{' && *itr != '}') {
+				spec.fill.assign(itr, jtr);
+				spec.align = *jtr;
+				itr = jtr + 1;
+			}
+		}
+
+		if (itr < end && is_sign(*itr)) {
+			spec.sign = *itr;
+			++itr;
+		}
+
+		if (itr < end && *itr == '#') {
+			spec.hash = true;
+			++itr;
+		}
+
+		if (itr < end && *itr == '0') {
+			spec.zero = true;
+			++itr;
+		}
+
+		while (itr < end && is_digit(*itr)) {
+			spec.width *= 10;
+			spec.width += ord(*itr);
+			++itr;
+		}
+
+		while (itr < end && *itr == ',') {
+			spec.comma = true;
+			++itr;
+		}
+
+		if (itr < end && *itr == '.') {
+			++itr;
+
+			if (itr < end && is_digit(*itr)) {
+				spec.precision = ord(*itr);
+				++itr;
+
+				while (itr < end && is_digit(*itr)) {
+					spec.precision *= 10;
+					spec.precision += ord(*itr);
+					++itr;
+				}
+			}
+			else {
+				throw std::invalid_argument("Expected precision after '.'.");
+			}
+		}
+
+		if (itr < end && is_type(*itr)) {
+			spec.type = *itr;
+			++itr;
+		}
+	}
+
+	return itr;
+}
+
+const char* _format_parse_field(
+	size_t& index, 
+	vector<_format_index_t>& indices, 
+	char& conv, 
+	_format_spec_t& spec, 
+	const char* begin, 
+	const char* end)
+{
+	const char* itr = begin;
+	itr = _format_parse_name(index, indices, itr, end);
+	itr = _format_parse_conv(conv, itr, end);
+	itr = _format_parse_spec(spec, itr, end);
+	return itr;
+}
+
+const char* _format_parse_field(
+	size_t& index, 
+	vector<_format_index_t>& indices, 
+	char& conv, 
+	string& spec, 
+	const char* begin, 
+	const char* end)
+{
+	const char* itr = begin;
+	itr = _format_parse_name(index, indices, itr, end);
+	itr = _format_parse_conv(conv, itr, end);
+
+	if (itr < end && *itr == ':') {
+		const char* jtr = ++itr;
+
+		while (itr < end && *itr != '{' && *itr != '}') {
+			++itr;
+		}
+
+		spec.assign(jtr, itr);
+	}
+	else {
+		spec.clear();
+	}
+
+	return itr;
 }
 
 const char* _replace_field(string& result, const char* itr, const _format_params_desc& desc) {
