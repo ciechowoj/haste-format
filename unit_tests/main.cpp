@@ -1,4 +1,4 @@
-#include <gtest/gtest.h>
+﻿#include <gtest/gtest.h>
 #include <haste/_format.hpp>
 #include <stdexcept> 
 
@@ -449,7 +449,37 @@ TEST(format, format_bool) {
 	EXPECT_EQ("false", format("{!a}", false));
 }
 
+TEST(format, format_char) {
+	EXPECT_EQ("'a'", format("{!r}", 'a'));
+	EXPECT_EQ("a", format("{!s}", 'a'));
+	EXPECT_EQ("'a'", format("{!a}", 'a'));
 
+	EXPECT_EQ(u8"'Ť'", format("{!r}", u'Ť'));
+	EXPECT_EQ(u8"Ť", format("{!s}", u'Ť'));
+	EXPECT_EQ(u8"'\\u0164'", format("{!a}", u'Ť'));
+
+	EXPECT_EQ(u8"'ł'", format("{!r}", u'ł'));
+	EXPECT_EQ(u8"ł", format("{!s}", u'ł'));
+	EXPECT_EQ(u8"'\\u0142'", format("{!a}", u'ł'));
+
+	EXPECT_EQ(u8"'Ä'", format("{!r}", u'Ä'));
+	EXPECT_EQ(u8"Ä", format("{!s}", u'Ä'));
+	EXPECT_EQ(u8"'\\xc4'", format("{!a}", u'Ä'));
+
+	EXPECT_EQ(u8"'\U00012060'", format("{!r}", U'\U00012060'));
+	EXPECT_EQ(u8"\U00012060", format("{!s}", U'\U00012060'));
+	EXPECT_EQ(u8"'\\U00012060'", format("{!a}", U'\U00012060'));
+}
+
+TEST(format, format_char_control) {
+	EXPECT_EQ(u8"'\\t'", format("{!a}", u'\t'));
+	EXPECT_EQ(u8"'\\r'", format("{!a}", u'\r'));
+	EXPECT_EQ(u8"'\\n'", format("{!a}", '\n'));
+
+	EXPECT_EQ(u8"'\\x00'", format("{!a}", '\0'));
+	EXPECT_EQ(u8"'\\x0b'", format("{!a}", '\v'));
+	EXPECT_EQ(u8"'\\x7f'", format("{!a}", '\x7f'));
+}
 
 
 

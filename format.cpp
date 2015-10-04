@@ -2,6 +2,7 @@
 #include <stdexcept>
 #include <algorithm>
 #include <cstring>
+#include <cstdint>
 
 namespace haste {
 
@@ -49,6 +50,38 @@ inline void utf8trim(
 	size_t full_size = end - begin;
 	size = min(width, full_size);
 	trimmed = begin + size;
+}
+
+static char* _char32_to_utf8(char* buffer, char32_t c) {
+	using namespace std;
+
+	static const int s = 8;
+	uint32_t x = std::uint32_t(c);
+	uint8_t* b = (uint8_t*)buffer;
+
+	if (x < 0x80) {
+		b[s - 1] = uint8_t(x);
+		return buffer + s - 1;
+	}
+	else {
+		int i = s;
+		uint8_t m = 0x80u;
+		while (x != 0) {
+			--i;
+			b[i] = (x & 0x3fu) | 0x80u;
+			x >>= 6;
+			m = m >> 1 | 0x80u;
+		}
+
+		if (m & 0x7fu & b[i]) {
+			b[--i] = m;
+		}
+		else {
+			b[i] |= m << 1;
+		}
+
+		return buffer + i;
+	}
 }
 
 inline unsigned char ord(char c) {
@@ -402,8 +435,7 @@ static void _replace_string_str(
 	string& result,
 	const _format_spec_t& spec,
 	const char* begin,
-	const char* end
-	)
+	const char* end)
 {
 	size_t size;
 	const char* trimmed;
@@ -456,8 +488,7 @@ static void _replace_bool(
 	string& result,
 	char conv,
 	const _format_spec_t& spec,
-	const _format_param_base& param
-	)
+	const _format_param_base& param)
 {
 	const char _true[] = "true";
 	const char _false[] = "false";
@@ -467,6 +498,96 @@ static void _replace_bool(
 	}
 	else {
 		_replace_string_str(result, spec, _false, _false + sizeof(_false) - 1);
+	}
+}
+
+inline char hex(unsigned x) {
+	return x < 10 ? x + '0' : x - 10 + 'a';
+}
+
+static void _replace_char_ascii(
+	string& result,
+	const _format_spec_t& spec,
+	const _format_param_base& param)
+{
+	using namespace std;
+
+	char buffer[16];
+	char* itr = buffer;
+
+	uint32_t x = (uint32_t)param._char;
+
+	*itr = '\''; ++itr;
+	if (x < 32) {
+		*itr = '\\'; ++itr;
+
+		if (x == '\t') {
+			*itr = 't'; ++itr;
+		}
+		else if (x == '\r') {
+			*itr = 'r'; ++itr;
+		}
+		else if (x == '\n') {
+			*itr = 'n'; ++itr;
+		}
+		else {
+			*itr = 'x'; ++itr;
+			*itr = hex(x >> 4); ++itr;
+			*itr = hex(x & 0x0fu); ++itr;
+		}
+	}
+	else if (x < 127) {
+		*itr = x; ++itr;
+	}
+	else if (x < 0x100) {
+		*itr = '\\'; ++itr;
+		*itr = 'x'; ++itr;
+		*itr = hex(x >> 4); ++itr;
+		*itr = hex(x & 0x0fu); ++itr;
+	}
+	else if (x < 0x10000) {
+		*itr = '\\'; ++itr;
+		*itr = 'u'; ++itr;
+		*itr = hex(x >> 12 & 0x0fu); ++itr;
+		*itr = hex(x >> 8 & 0x0fu); ++itr;
+		*itr = hex(x >> 4 & 0x0fu); ++itr;
+		*itr = hex(x >> 0 & 0x0fu); ++itr;
+	}
+	else {
+		*itr = '\\'; ++itr;
+		*itr = 'U'; ++itr;
+		for (int i = 7; 0 <= i; --i) {
+			*itr = hex(x >> i * 4 & 0x0fu); ++itr;
+		}
+	}
+
+	*itr = '\''; ++itr;
+	_replace_string_str(result, spec, buffer, itr);
+}
+
+static void _replace_char(
+	string& result,
+	char conv,
+	const _format_spec_t& spec,
+	const _format_param_base& param)
+{
+	char buffer[10];
+	char* begin = nullptr;
+
+	switch(conv) {
+	default:
+	case 's':
+		begin = _char32_to_utf8(buffer, param._char);
+		_replace_string_str(result, spec, begin, buffer + 8);
+		break;
+	case 'r':
+		begin = _char32_to_utf8(buffer, param._char);
+		begin[-1] = '\'';
+		buffer[8] = '\'';
+		_replace_string_str(result, spec, begin - 1, buffer + 9);
+		break;
+	case 'a':
+		_replace_char_ascii(result, spec, param);
 	}
 }
 
@@ -499,7 +620,7 @@ static void _replace_field(
 	case schar_id:
 	case uchar_id:
 	case char16_t_t:
-	case char32_t_t:
+	case char32_t_t: _replace_char(result, conv, spec, param); break;
 	case wchar_t_t: break;
 	case short_id: break;
 	case ushort_id: break;
