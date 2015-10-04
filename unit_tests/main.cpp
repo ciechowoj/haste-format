@@ -233,7 +233,7 @@ TEST(haste_format, _format_parse_spec_SINGLE)
 	EXPECT_FALSE(spec.comma);
 
 	EXPECT_SPEC_PARSED('\0', ":1");
-	EXPECT_EQ("", spec.fill);
+	EXPECT_EQ(" ", spec.fill);
 	EXPECT_EQ(1, spec.width);
 	EXPECT_EQ(0, spec.precision);
 	EXPECT_EQ(0, spec.align);
@@ -244,7 +244,7 @@ TEST(haste_format, _format_parse_spec_SINGLE)
 	EXPECT_FALSE(spec.comma);
 
 	EXPECT_SPEC_PARSED('\0', ":42");
-	EXPECT_EQ("", spec.fill);
+	EXPECT_EQ(" ", spec.fill);
 	EXPECT_EQ(42, spec.width);
 	EXPECT_EQ(0, spec.precision);
 	EXPECT_EQ(0, spec.align);
@@ -405,12 +405,38 @@ TEST(format, specifier_supported_for_type) {
 	EXPECT_NO_THROW(format("{0:.123}", 42.0f));
 }
 
-/*
+TEST(format, eq_allowed_for_numeric_only) {
+	EXPECT_THROW(format("{0:==}", string()), std::invalid_argument);
+	EXPECT_THROW(format("{0:=}", string()), std::invalid_argument);
+}
+
 TEST(format, format_nullptr) {
-
 	EXPECT_EQ("nullptr", format("{}", nullptr));
+	EXPECT_EQ("nullptr   ", format("{:10}", nullptr));
+	EXPECT_EQ("nullptr   ", format("{:<10}", nullptr));
+	EXPECT_EQ("   nullptr", format("{:>10}", nullptr));
+	EXPECT_EQ(" nullptr  ", format("{:^10}", nullptr));
 
-}*/
+	EXPECT_EQ("nullptr<<<", format("{:<<10}", nullptr));
+	EXPECT_EQ("<<<nullptr", format("{:<>10}", nullptr));
+	EXPECT_EQ(">nullptr>>", format("{:>^10}", nullptr));
+
+	EXPECT_EQ("nullptr000", format("{:<010}", nullptr));
+	EXPECT_EQ("000nullptr", format("{:>010}", nullptr));
+	EXPECT_EQ("0nullptr00", format("{:^010}", nullptr));
+
+	EXPECT_EQ("null      ", format("{:<10.4}", nullptr));
+	EXPECT_EQ("      null", format("{:>10.4}", nullptr));
+	EXPECT_EQ("   null   ", format("{:^10.4}", nullptr));
+
+	EXPECT_EQ("          ", format("{:<10.0}", nullptr));
+	EXPECT_EQ("          ", format("{:>10.0}", nullptr));
+	EXPECT_EQ("          ", format("{:^10.0}", nullptr));
+
+	EXPECT_EQ("nullp", format("{:<5.5}", nullptr));
+	EXPECT_EQ("nullp", format("{:>5.5}", nullptr));
+	EXPECT_EQ("nullp", format("{:^5.5}", nullptr));
+}
 
 
 

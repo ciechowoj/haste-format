@@ -7,6 +7,8 @@ using std::nullptr_t;
 using std::string;
 using std::size_t;
 
+size_t _strlen(const char* _string);
+
 namespace _format_detail {
 
 struct B {
@@ -18,7 +20,7 @@ struct B {
 		long long _llong;
 		unsigned long long _ullong;
 		double _double;
-		const char* _string;
+		struct { const char *_begin, *_end; };
 		struct {
 			const void* _object;
 			string (*_to_string)(const void*, int);
@@ -45,9 +47,18 @@ template <> struct F<long long> : public B { F(long long x) { _llong = x; id = 1
 template <> struct F<unsigned long long> : public B { F(unsigned long long x) { _ullong = x; id = 15; } };
 template <> struct F<float> : public B { F(float x) { _double = x; id = 16; } };
 template <> struct F<double> : public B { F(double x) { _double = x; id = 17; } };
-template <> struct F<string> : public B { F(string x) { _string = x.c_str(); id = 18; } };
-template <> struct F<const char*> : public B { F(const char* x) { _string = x; id = 19; } };
-template <size_t N> struct F<char[N]> : public B { F(const char* x) { _string = x; id = 19; } };
+
+template <> struct F<string> : public B { 
+	F(string x) { _begin = x.c_str(); _end = _begin + x.size(); id = 18; } 
+};
+
+template <> struct F<const char*> : public B { 
+	F(const char* x) { _begin = x; _end = x + _strlen(x); id = 19; } 
+};
+
+template <size_t N> struct F<char[N]> : public B { 
+	F(const char* x) { _begin = x; _end = x + N - 1; id = 19; } 
+};
 
 }
 
@@ -62,7 +73,6 @@ struct _format_params_desc {
 };
 
 string _format(const _format_params_desc& desc);
-size_t _strlen(const char* _string);
 
 template <class... Params> string format(const char* format_string, const Params&... params) {
 	_format_param_base params_array[sizeof...(Params) + 1] = { 

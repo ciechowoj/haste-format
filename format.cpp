@@ -35,6 +35,22 @@ static const char* type_names[] = {
 	"const char*",
 };
 
+inline size_t utf8len(const char* begin, const char* end) {
+	return end - begin;
+}
+
+inline void utf8trim(
+	size_t& size, 
+	const char*& trimmed, 
+	size_t width, 
+	const char* begin, 
+	const char* end) 
+{
+	size_t full_size = end - begin;
+	size = min(width, full_size);
+	trimmed = begin + size;
+}
+
 inline unsigned char ord(char c) {
 	return (unsigned char)(c - '0');
 }
@@ -155,6 +171,10 @@ inline const char* skip_utf8(const char* begin, const char* end) {
 	}
 }
 
+inline void _throw_cannot_specify_equal(int id) {
+	throw std::invalid_argument("Cannot specify '=' for '" + string(type_names[id]) + "' type.");
+}
+
 inline void _throw_cannot_specify_comma(int id) {
 	throw std::invalid_argument("Cannot specify ',' for '" + string(type_names[id]) + "' type.");
 }
@@ -223,12 +243,20 @@ const char* _format_parse_spec(
 		const char* jtr = skip_utf8(itr, end);
 		if (jtr < end && is_align(*jtr)) {
 			if (*itr != '{' && *itr != '}') {
+				if (*jtr == '=' && !is_numeric(id)) {
+					_throw_cannot_specify_equal(id);
+				}
+
 				spec.fill.assign(itr, jtr);
 				spec.align = *jtr;
 				itr = jtr + 1;
 			}
 		}
 		else if(itr < end && is_align(*itr)) {
+			if (*itr == '=' && !is_numeric(id)) {
+				_throw_cannot_specify_equal(id);
+			}
+
 			spec.align = *itr;
 			++itr;
 		}
@@ -264,12 +292,20 @@ const char* _format_parse_spec(
 			++itr;
 		}
 
-		while (itr < end && is_digit(*itr)) {
-			spec.width *= 10;
-			spec.width += ord(*itr);
+		if (itr < end && is_digit(*itr)) {
+			if (spec.fill.empty()) {
+				spec.fill = " ";
+			}
+			
+			spec.width = ord(*itr);
 			++itr;
-		}
 
+			while (itr < end && is_digit(*itr)) {
+				spec.width *= 10;
+				spec.width += ord(*itr);
+				++itr;
+			}
+		}
 
 		while (itr < end && *itr == ',') {
 			if (!is_numeric(id)) {
@@ -353,15 +389,67 @@ const char* _format_preparse_field(
 	return itr;
 }
 
+static void _append_fill(
+	string& result,
+	const string& fill,
+	size_t size) {
+	for (size_t i = 0; i < size; ++i) {
+		result.append(fill);
+	}
+}
+
+static void _replace_string_str(
+	string& result,
+	const _format_spec_t& spec,
+	const char* begin,
+	const char* end
+	)
+{
+	size_t size;
+	const char* trimmed;
+
+	if (spec.dot) {
+		utf8trim(size, trimmed, spec.precision, begin, end);
+	}
+	else {
+		size = utf8len(begin, end);
+		trimmed = end;
+	}
+
+	if (size < size_t(spec.width)) {
+		switch(spec.align) {
+		default:
+		case '<':
+			result.append(begin, trimmed);
+			_append_fill(result, spec.fill, size_t(spec.width) - size);
+			break;
+		case '>':
+			_append_fill(result, spec.fill, size_t(spec.width) - size);
+			result.append(begin, trimmed);
+			break;
+		case '^':
+			size_t left = (size_t(spec.width) - size) / 2;
+			size_t right = size_t(spec.width) - size - left;
+			_append_fill(result, spec.fill, left);
+			result.append(begin, trimmed);
+			_append_fill(result, spec.fill, right);
+			break;
+		}
+	}
+	else {
+		result.append(begin, trimmed);
+	}
+}
+
 static void _replace_nullptr(
 	string& result,
+	char conv,
 	const _format_spec_t& spec,
 	const _format_param_base& param
 	)
 {
-
-
-
+	const char null[] = "nullptr";
+	_replace_string_str(result, spec, null, null + sizeof(null) - 1);
 }
 
 static void _replace_field(
@@ -387,7 +475,7 @@ static void _replace_field(
 	}
 
 	switch(param.id) {
-	case null_id: _replace_nullptr(result, spec, param); break;
+	case null_id: _replace_nullptr(result, conv, spec, param); break;
 	case char_id:
 		break;
 	case bool_id:
