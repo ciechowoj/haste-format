@@ -296,7 +296,7 @@ const char* _format_parse_spec(
 			if (spec.fill.empty()) {
 				spec.fill = " ";
 			}
-			
+
 			spec.width = ord(*itr);
 			++itr;
 
@@ -441,7 +441,7 @@ static void _replace_string_str(
 	}
 }
 
-static void _replace_nullptr(
+static void _replace_nullptr_t(
 	string& result,
 	char conv,
 	const _format_spec_t& spec,
@@ -450,6 +450,24 @@ static void _replace_nullptr(
 {
 	const char null[] = "nullptr";
 	_replace_string_str(result, spec, null, null + sizeof(null) - 1);
+}
+
+static void _replace_bool(
+	string& result,
+	char conv,
+	const _format_spec_t& spec,
+	const _format_param_base& param
+	)
+{
+	const char _true[] = "true";
+	const char _false[] = "false";
+
+	if (param._int) {
+		_replace_string_str(result, spec, _true, _true + sizeof(_true) - 1);
+	}
+	else {
+		_replace_string_str(result, spec, _false, _false + sizeof(_false) - 1);
+	}
 }
 
 static void _replace_field(
@@ -475,27 +493,27 @@ static void _replace_field(
 	}
 
 	switch(param.id) {
-	case null_id: _replace_nullptr(result, conv, spec, param); break;
+	case null_id: _replace_nullptr_t(result, conv, spec, param); break;
+	case bool_id: _replace_bool(result, conv, spec, param); break;
 	case char_id:
-		break;
-	case bool_id:
-		break;
-	case int_id:
-		break;
-	case uint_id:
-		break;
-	case llong_id:
-		break;
-	case ullong_id:
-		break;
-	case double_id:
-		break;
-	case std_string_id:
-		break;
-	case c_string_id:
-		break;
-	case to_string_id:
-		break;
+	case schar_id:
+	case uchar_id:
+	case char16_t_t:
+	case char32_t_t:
+	case wchar_t_t: break;
+	case short_id: break;
+	case ushort_id: break;
+	case int_id: break;
+	case uint_id: break;
+	case long_id: break;
+	case ulong_id: break;
+	case llong_id: break;
+	case ullong_id: break;
+	case float_id: break;
+	case double_id: break;
+	case std_string_id: break;
+	case c_string_id: break;
+	case to_string_id: break;
 	}
 }
 

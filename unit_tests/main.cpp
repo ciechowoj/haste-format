@@ -436,6 +436,17 @@ TEST(format, format_nullptr) {
 	EXPECT_EQ("nullp", format("{:<5.5}", nullptr));
 	EXPECT_EQ("nullp", format("{:>5.5}", nullptr));
 	EXPECT_EQ("nullp", format("{:^5.5}", nullptr));
+
+	EXPECT_EQ("nullptr   ", format("{!r:<10}", nullptr));
+	EXPECT_EQ("nullptr   ", format("{!a:<10}", nullptr));
+}
+
+TEST(format, format_bool) {
+	EXPECT_EQ(" true ", format("{:^6}", true));
+	EXPECT_EQ(" false ", format("{:^7}", false));
+	EXPECT_EQ("false", format("{!r}", false));
+	EXPECT_EQ("false", format("{!s}", false));
+	EXPECT_EQ("false", format("{!a}", false));
 }
 
 
