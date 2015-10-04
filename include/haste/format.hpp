@@ -47,7 +47,7 @@ template <> struct F<float> : public B { F(float x) { _double = x; id = 16; } };
 template <> struct F<double> : public B { F(double x) { _double = x; id = 17; } };
 template <> struct F<string> : public B { F(string x) { _string = x.c_str(); id = 18; } };
 template <> struct F<const char*> : public B { F(const char* x) { _string = x; id = 19; } };
-template <size_t N> struct F<char [N]> : public B { F(const char* x) { _string = x; id = 19; } };
+template <size_t N> struct F<char[N]> : public B { F(const char* x) { _string = x; id = 19; } };
 
 }
 

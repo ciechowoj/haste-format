@@ -8,20 +8,32 @@ namespace haste {
 using std::min;
 using std::max;
 
-// replacement_field ::=  "{" [field_name] ["!" conversion] [":" format_spec] "}"
-// field_name        ::=  integer ("[" element_index "]")*
-// element_index     ::=  integer | index_string
-// index_string      ::=  <any source character except "]"> +
-// conversion        ::=  "r" | "s" | "a"
-// format_spec       ::=  <described in the next section>
-//
-// format_spec ::=  [[fill]align][sign][#][0][width][,][.precision][type]
-// fill        ::=  <a character other than '{' or '}'>
-// align       ::=  "<" | ">" | "=" | "^"
-// sign        ::=  "+" | "-" | " "
-// width       ::=  integer
-// precision   ::=  integer
-// type        ::=  "b" | "c" | "d" | "e" | "E" | "f" | "F" | "g" | "G" | "n" | "o" | "s" | "x" | "X" | "%"
+static const int unknown_mode = -1;
+static const int auto_mode = 0;
+static const int manual_mode = 1;
+
+static const char* type_names[] = {
+	"std::nullptr_t",
+	"bool",
+	"char",
+	"signed char",
+	"unsigned char",
+	"char16_t",
+	"char32_t",
+	"wchar_t",
+	"short",
+	"unsigned short",
+	"int",
+	"unsinged int",
+	"long",
+	"unsigned long",
+	"long long",
+	"unsinged long long",
+	"float",
+	"double",
+	"std::string",
+	"const char*",
+};
 
 inline unsigned char ord(char c) {
 	return (unsigned char)(c - '0');
@@ -143,8 +155,53 @@ inline const char* skip_utf8(const char* begin, const char* end) {
 	}
 }
 
+inline void _throw_cannot_specify_comma(int id) {
+	throw std::invalid_argument("Cannot specify ',' for '" + string(type_names[id]) + "' type.");
+}
+
+inline void _throw_cannot_specify_hash(int id) {
+	throw std::invalid_argument("Cannot specify '#' for '" + string(type_names[id]) + "' type.");
+}
+
+inline void _throw_cannot_specify_sign(int id, char sign) {
+	throw std::invalid_argument(
+		string("Cannot specify '") +
+		sign +
+		"' for '" + 
+		string(type_names[id]) + 
+		"' type.");
+}
+
+inline void _throw_cannot_specify_type(int id, char type) {
+	throw std::invalid_argument(
+		string("Cannot specify '") +
+		type +
+		"' for '" + 
+		string(type_names[id]) + 
+		"' type.");
+}
+
+inline void _throw_cannot_specify_precision(int id) {
+	throw std::invalid_argument(
+		"Cannot specify '.precision' for '" + 
+		string(type_names[id]) + "' type.");
+}
+
+inline bool is_numeric(int id) {
+	return short_id <= id && id <= double_id;
+}
+
+inline bool is_integer(int id) {
+	return short_id <= id && id <= ullong_id;
+}
+
+inline bool types_match(int id, char type) {
+	return true;
+}
+
 const char* _format_parse_spec(
 	_format_spec_t& spec, 
+	int id,
 	const char* begin, 
 	const char* end)
 {
@@ -171,18 +228,38 @@ const char* _format_parse_spec(
 				itr = jtr + 1;
 			}
 		}
+		else if(itr < end && is_align(*itr)) {
+			spec.align = *itr;
+			++itr;
+		}
 
 		if (itr < end && is_sign(*itr)) {
+
+			if (!is_numeric(id)) {
+				_throw_cannot_specify_sign(id, *itr);
+			}
+
 			spec.sign = *itr;
 			++itr;
 		}
 
 		if (itr < end && *itr == '#') {
+			if (!is_numeric(id)) {
+				_throw_cannot_specify_hash(id);
+			}
+
 			spec.hash = true;
 			++itr;
 		}
 
 		if (itr < end && *itr == '0') {
+			if (spec.fill.empty()) {
+				spec.fill = "0";
+			}
+			if (spec.align == 0) {
+				spec.align = '=';
+			}
+
 			spec.zero = true;
 			++itr;
 		}
@@ -193,13 +270,23 @@ const char* _format_parse_spec(
 			++itr;
 		}
 
+
 		while (itr < end && *itr == ',') {
+			if (!is_numeric(id)) {
+				_throw_cannot_specify_comma(id);
+			}
+
 			spec.comma = true;
 			++itr;
 		}
 
 		if (itr < end && *itr == '.') {
+			if (is_integer(id)) {
+				_throw_cannot_specify_precision(id);
+			}
+
 			++itr;
+			spec.dot = true;
 
 			if (itr < end && is_digit(*itr)) {
 				spec.precision = ord(*itr);
@@ -217,26 +304,15 @@ const char* _format_parse_spec(
 		}
 
 		if (itr < end && is_type(*itr)) {
+			if (!types_match(id, *itr)) {
+				_throw_cannot_specify_type(id, *itr);
+			}
+
 			spec.type = *itr;
 			++itr;
 		}
 	}
 
-	return itr;
-}
-
-const char* _format_parse_field(
-	int& index, 
-	vector<_format_index_t>& indices, 
-	char& conv, 
-	_format_spec_t& spec, 
-	const char* begin, 
-	const char* end)
-{
-	const char* itr = begin;
-	itr = _format_parse_name(index, indices, itr, end);
-	itr = _format_parse_conv(conv, itr, end);
-	itr = _format_parse_spec(spec, itr, end);
 	return itr;
 }
 
@@ -254,14 +330,14 @@ const char* _format_preparse_field(
 	itr = _format_parse_conv(conv, itr, end);
 
 	if (itr < end && *itr == ':') {
-		const char* jtr = ++itr;
+		const char* jtr = itr;
 
 		while (itr < end && *itr != '{' && *itr != '}') {
 			++itr;
 		}
 		
 		spec_begin = jtr;
-		spec_begin = itr;
+		spec_end = itr;
 	}
 
 	if (itr < end) {
@@ -277,54 +353,16 @@ const char* _format_preparse_field(
 	return itr;
 }
 
-static const int unknown_mode = -1;
-static const int auto_mode = 0;
-static const int manual_mode = 1;
+static void _replace_nullptr(
+	string& result,
+	const _format_spec_t& spec,
+	const _format_param_base& param
+	)
+{
 
-static const int null_id = 0;
-static const int bool_id = 1;
-static const int char_id = 2;
-static const int schar_id = 3;
-static const int uchar_id = 4;
-static const int char16_t_t = 5;
-static const int char32_t_t = 6;
-static const int wchar_t_t = 7;
-static const int short_id = 8;
-static const int ushort_id = 9;
-static const int int_id = 10;
-static const int uint_id = 11;
-static const int long_id = 12;
-static const int ulong_id = 13;
-static const int llong_id = 14;
-static const int ullong_id = 15;
-static const int float_id = 16;
-static const int double_id = 17;
-static const int std_string_id = 18;
-static const int c_string_id = 19;
-static const int to_string_id = 20;
 
-static const char* type_names[] = {
-	"std::nullptr_t",
-	"bool",
-	"char",
-	"signed char",
-	"unsigned char",
-	"char16_t",
-	"char32_t",
-	"wchar_t",
-	"short",
-	"unsigned short",
-	"int",
-	"unsinged int",
-	"long",
-	"unsigned long",
-	"long long",
-	"unsinged long long",
-	"float",
-	"double",
-	"std::string",
-	"const char*",
-};
+
+}
 
 static void _replace_field(
 	string& result,
@@ -334,17 +372,22 @@ static void _replace_field(
 	const char* spec_end,
 	const _format_param_base& param)
 {
-	if (!indices.empty() && param.id <= c_string_id) {
-		char buffer[64];
-		::strcpy(buffer, type_names[param.id]);
-		::strcat(buffer, " is not indexable.");
-		throw std::invalid_argument(buffer);
+	_format_spec_t spec;
+
+	if (param.id <= c_string_id) {
+		if (!indices.empty()) {
+			throw std::invalid_argument(string(type_names[param.id]) + " is not indexable.");
+		}
+
+		_format_parse_spec(
+			spec,
+			param.id,
+			spec_begin,
+			spec_end);
 	}
 
 	switch(param.id) {
-	case null_id:
-		result.append("nullptr");
-		break;
+	case null_id: _replace_nullptr(result, spec, param); break;
 	case char_id:
 		break;
 	case bool_id:

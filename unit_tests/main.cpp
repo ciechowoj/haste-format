@@ -115,7 +115,7 @@ TEST(haste_format, _format_parse_spec_SINGLE)
 		spec = _format_spec_t(); \
 		begin = name; \
 		end = begin + _strlen(begin); \
-		ASSERT_EQ(expected_end, *_format_parse_spec(spec, begin, end)); \
+		ASSERT_EQ(expected_end, *_format_parse_spec(spec, 17, begin, end)); \
 
 	EXPECT_SPEC_PARSED('\0', "");
 	EXPECT_EQ(string(), spec.fill);
@@ -200,10 +200,32 @@ TEST(haste_format, _format_parse_spec_SINGLE)
 	EXPECT_FALSE(spec.comma);
 
 	EXPECT_SPEC_PARSED('\0', ":0");
-	EXPECT_EQ("", spec.fill);
+	EXPECT_EQ("0", spec.fill);
 	EXPECT_EQ(0, spec.width);
 	EXPECT_EQ(0, spec.precision);
-	EXPECT_EQ(0, spec.align);
+	EXPECT_EQ('=', spec.align);
+	EXPECT_EQ(0, spec.sign);
+	EXPECT_EQ(0, spec.type);
+	EXPECT_FALSE(spec.hash);
+	EXPECT_TRUE(spec.zero);
+	EXPECT_FALSE(spec.comma);
+
+	EXPECT_SPEC_PARSED('\0', ":x<0");
+	EXPECT_EQ("x", spec.fill);
+	EXPECT_EQ(0, spec.width);
+	EXPECT_EQ(0, spec.precision);
+	EXPECT_EQ('<', spec.align);
+	EXPECT_EQ(0, spec.sign);
+	EXPECT_EQ(0, spec.type);
+	EXPECT_FALSE(spec.hash);
+	EXPECT_TRUE(spec.zero);
+	EXPECT_FALSE(spec.comma);
+
+	EXPECT_SPEC_PARSED('\0', ":<0");
+	EXPECT_EQ("0", spec.fill);
+	EXPECT_EQ(0, spec.width);
+	EXPECT_EQ(0, spec.precision);
+	EXPECT_EQ('<', spec.align);
 	EXPECT_EQ(0, spec.sign);
 	EXPECT_EQ(0, spec.type);
 	EXPECT_FALSE(spec.hash);
@@ -265,18 +287,45 @@ TEST(haste_format, _format_parse_spec_SINGLE)
 	EXPECT_FALSE(spec.zero);
 	EXPECT_FALSE(spec.comma);
 
+	EXPECT_SPEC_PARSED('\0', ":<");
+	EXPECT_EQ("", spec.fill);
+	EXPECT_EQ(0, spec.width);
+	EXPECT_EQ(0, spec.precision);
+	EXPECT_EQ('<', spec.align);
+	EXPECT_EQ(0, spec.sign);
+	EXPECT_EQ(0, spec.type);
+	EXPECT_FALSE(spec.hash);
+	EXPECT_FALSE(spec.zero);
+	EXPECT_FALSE(spec.comma);
+
 	#undef EXPECT_SPEC_PARSED
 
 	#define EXPECT_SPEC_THROWS(name) \
 		spec = _format_spec_t(); \
 		begin = name; \
 		end = begin + _strlen(begin); \
-		EXPECT_THROW(_format_parse_spec(spec, begin, end), std::invalid_argument);
+		EXPECT_THROW(_format_parse_spec(spec, 17, begin, end), std::invalid_argument);
 
 	EXPECT_SPEC_THROWS(":.");
 	EXPECT_SPEC_THROWS(":.%%");
 
-	#undef EXPECT_CONV_THROWS
+	#undef EXPECT_SPEC_THROWS
+}
+
+TEST(haste_format, _format_parse_spec_MISMATCH) {
+	_format_spec_t spec;
+	const char* begin, *end;
+
+	#define EXPECT_SPEC_THROWS(id, name) \
+		spec = _format_spec_t(); \
+		begin = name; \
+		end = begin + _strlen(begin); \
+		EXPECT_THROW(_format_parse_spec(spec, id, begin, end), std::invalid_argument);
+
+	EXPECT_SPEC_THROWS(null_id, ":,");
+	EXPECT_SPEC_THROWS(std_string_id, ":#");
+
+	#undef EXPECT_SPEC_THROWS	
 }
 
 TEST(haste_format, _format_parse_spec_MULTIPLE)
@@ -288,7 +337,7 @@ TEST(haste_format, _format_parse_spec_MULTIPLE)
 		spec = _format_spec_t(); \
 		begin = name; \
 		end = begin + _strlen(begin); \
-		ASSERT_EQ(expected_end, *_format_parse_spec(spec, begin, end));
+		ASSERT_EQ(expected_end, *_format_parse_spec(spec, 17, begin, end));
 
 	EXPECT_SPEC_PARSED('\0', ":w=-#0123,.34X");
 	EXPECT_EQ("w", spec.fill);
@@ -315,112 +364,6 @@ TEST(haste_format, _format_parse_spec_MULTIPLE)
 	#undef EXPECT_SPEC_PARSED
 }
 
-TEST(haste_format, _format_parse_field)
-{
-	int index;
-	vector<_format_index_t> indices;
-	char conv;
-	_format_spec_t spec;
-	const char* begin, *end;
-
-	#define EXPECT_FIELD_PARSED(expected_end, name) \
-		index = -1; \
-		indices.clear(); \
-		conv = 0; \
-		spec = _format_spec_t(); \
-		begin = name; \
-		end = begin + _strlen(begin); \
-		ASSERT_EQ(expected_end, *_format_parse_field(index, indices, conv, spec, begin, end));
-
-	EXPECT_FIELD_PARSED('\0', "123[123][abb]!s:w=-#0123,.34X");
-	ASSERT_EQ(2, indices.size());
-	EXPECT_EQ(123, index);
-	EXPECT_EQ("123", string(indices[0].begin, indices[0].end));
-	EXPECT_TRUE(indices[0].is_integer);
-	EXPECT_EQ("abb", string(indices[1].begin, indices[1].end));
-	EXPECT_FALSE(indices[1].is_integer);
-	EXPECT_EQ('s', conv);
-	EXPECT_EQ("w", spec.fill);
-	EXPECT_EQ(123, spec.width);
-	EXPECT_EQ(34, spec.precision);
-	EXPECT_EQ('=', spec.align);
-	EXPECT_EQ('-', spec.sign);
-	EXPECT_EQ('X', spec.type);
-	EXPECT_TRUE(spec.hash);
-	EXPECT_TRUE(spec.zero);
-	EXPECT_TRUE(spec.comma);
-
-	EXPECT_FIELD_PARSED('\0', "!s:w=-#0123,.34X");
-	EXPECT_EQ(-1, index);
-	ASSERT_EQ(0, indices.size());
-	EXPECT_EQ('s', conv);
-	EXPECT_EQ("w", spec.fill);
-	EXPECT_EQ(123, spec.width);
-	EXPECT_EQ(34, spec.precision);
-	EXPECT_EQ('=', spec.align);
-	EXPECT_EQ('-', spec.sign);
-	EXPECT_EQ('X', spec.type);
-	EXPECT_TRUE(spec.hash);
-	EXPECT_TRUE(spec.zero);
-	EXPECT_TRUE(spec.comma);
-
-	EXPECT_FIELD_PARSED('\0', "123[123][abb]:w=-#0123,.34X");
-	ASSERT_EQ(2, indices.size());
-	EXPECT_EQ(123, index);
-	EXPECT_EQ("123", string(indices[0].begin, indices[0].end));
-	EXPECT_TRUE(indices[0].is_integer);
-	EXPECT_EQ("abb", string(indices[1].begin, indices[1].end));
-	EXPECT_FALSE(indices[1].is_integer);
-	EXPECT_EQ(0, conv);
-	EXPECT_EQ("w", spec.fill);
-	EXPECT_EQ(123, spec.width);
-	EXPECT_EQ(34, spec.precision);
-	EXPECT_EQ('=', spec.align);
-	EXPECT_EQ('-', spec.sign);
-	EXPECT_EQ('X', spec.type);
-	EXPECT_TRUE(spec.hash);
-	EXPECT_TRUE(spec.zero);
-	EXPECT_TRUE(spec.comma);
-
-	EXPECT_FIELD_PARSED('\0', "123[123][abb]!s");
-	ASSERT_EQ(2, indices.size());
-	EXPECT_EQ(123, index);
-	EXPECT_EQ("123", string(indices[0].begin, indices[0].end));
-	EXPECT_TRUE(indices[0].is_integer);
-	EXPECT_EQ("abb", string(indices[1].begin, indices[1].end));
-	EXPECT_FALSE(indices[1].is_integer);
-	EXPECT_EQ('s', conv);
-	EXPECT_EQ("", spec.fill);
-	EXPECT_EQ(0, spec.width);
-	EXPECT_EQ(0, spec.precision);
-	EXPECT_EQ(0, spec.align);
-	EXPECT_EQ(0, spec.sign);
-	EXPECT_EQ(0, spec.type);
-	EXPECT_FALSE(spec.hash);
-	EXPECT_FALSE(spec.zero);
-	EXPECT_FALSE(spec.comma);
-
-	EXPECT_FIELD_PARSED('\0', "123[123][abb]:w=-#0123,.34X");
-	ASSERT_EQ(2, indices.size());
-	EXPECT_EQ(123, index);
-	EXPECT_EQ("123", string(indices[0].begin, indices[0].end));
-	EXPECT_TRUE(indices[0].is_integer);
-	EXPECT_EQ("abb", string(indices[1].begin, indices[1].end));
-	EXPECT_FALSE(indices[1].is_integer);
-	EXPECT_EQ(0, conv);
-	EXPECT_EQ("w", spec.fill);
-	EXPECT_EQ(123, spec.width);
-	EXPECT_EQ(34, spec.precision);
-	EXPECT_EQ('=', spec.align);
-	EXPECT_EQ('-', spec.sign);
-	EXPECT_EQ('X', spec.type);
-	EXPECT_TRUE(spec.hash);
-	EXPECT_TRUE(spec.zero);
-	EXPECT_TRUE(spec.comma);
-	
-	#undef EXPECT_FIELD_PARSED
-}
-
 TEST(format, escape_sequences) {
 	EXPECT_EQ("", format(""));
 	EXPECT_EQ("A", format("A"));
@@ -442,18 +385,32 @@ TEST(format, automatic_numbering)
 	EXPECT_THROW(format("{0}{}", 0, 1), std::invalid_argument);
 }
 
-TEST(format, not_indexable)
-{
+TEST(format, not_indexable) {
 	EXPECT_THROW(format("{0[0]}", 0), std::invalid_argument);
 	EXPECT_THROW(format("{0[0]}", '\0'), std::invalid_argument);
 	EXPECT_THROW(format("{0[0]}", "string"), std::invalid_argument);
 }
 
+TEST(format, specifier_unsupported_for_type) {
+	EXPECT_THROW(format("{0:#}", nullptr), std::invalid_argument);	
+	EXPECT_THROW(format("{0:,}", string()), std::invalid_argument);
+	EXPECT_THROW(format("{0:+0}", "sudo"), std::invalid_argument);
+	EXPECT_THROW(format("{0: .123}", string()), std::invalid_argument);
+}
+
+TEST(format, specifier_supported_for_type) {
+	EXPECT_NO_THROW(format("{0:#}", 0));	
+	EXPECT_NO_THROW(format("{0:,}", 0.0));
+	EXPECT_NO_THROW(format("{0:+0}", 80ull));
+	EXPECT_NO_THROW(format("{0:.123}", 42.0f));
+}
+
+/*
 TEST(format, format_nullptr) {
 
 	EXPECT_EQ("nullptr", format("{}", nullptr));
 
-}
+}*/
 
 
 
