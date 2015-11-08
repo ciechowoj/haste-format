@@ -36,6 +36,31 @@ static const char* type_names[] = {
 	"const char*",
 };
 
+template <class T> inline char* _int_to_str(char* buffer, T value) {
+	if (value == 0) {
+		*(--buffer) = '0';
+	}
+	else {
+		bool sign = true;
+
+		if (value > 0) {
+			sign = false;
+			value = -value;
+		}
+
+		while (value != 0) {
+			*(--buffer) = -value % 10 + '0';
+			value /= 10;
+		}
+
+		if (sign) {
+			*(--buffer) = '-';
+		}
+	}
+	
+	return buffer;
+}
+
 inline size_t utf8len(const char* begin, const char* end) {
 	return end - begin;
 }
@@ -431,7 +456,55 @@ static void _append_fill(
 	}
 }
 
+static void _trim_string(
+	size_t& num_chars,
+	const char*& end,
+	const _format_spec_t& spec,
+	const char* begin)
+{
+	if (spec.dot) {
+		utf8trim(num_chars, end, spec.precision, begin, end);
+	}
+	else {
+		num_chars = utf8len(begin, end);
+	}
+}
+
 static void _replace_string_str(
+	string& result,
+	const _format_spec_t& spec,
+	const char* begin,
+	const char* end)
+{
+	size_t num_chars;
+	_trim_string(num_chars, end, spec, begin);
+
+	if (num_chars < size_t(spec.width)) {
+		switch(spec.align) {
+		default:
+		case '<':
+			result.append(begin, end);
+			_append_fill(result, spec.fill, size_t(spec.width) - num_chars);
+			break;
+		case '>':
+			_append_fill(result, spec.fill, size_t(spec.width) - num_chars);
+			result.append(begin, end);
+			break;
+		case '^':
+			size_t left = (size_t(spec.width) - num_chars) / 2;
+			size_t right = size_t(spec.width) - num_chars - left;
+			_append_fill(result, spec.fill, left);
+			result.append(begin, end);
+			_append_fill(result, spec.fill, right);
+			break;
+		}
+	}
+	else {
+		result.append(begin, end);
+	}
+}
+
+static void _replace_string_repr(
 	string& result,
 	const _format_spec_t& spec,
 	const char* begin,
@@ -441,7 +514,7 @@ static void _replace_string_str(
 	const char* trimmed;
 
 	if (spec.dot) {
-		utf8trim(size, trimmed, spec.precision, begin, end);
+		utf8trim(size, trimmed, max(0, spec.precision - 1), begin, end);
 	}
 	else {
 		size = utf8len(begin, end);
@@ -469,9 +542,12 @@ static void _replace_string_str(
 		}
 	}
 	else {
+		result.append("\"");
 		result.append(begin, trimmed);
+		result.append("\"");
 	}
 }
+
 
 static void _replace_nullptr_t(
 	string& result,
@@ -591,6 +667,37 @@ static void _replace_char(
 	}
 }
 
+static void _replace_integer(
+	string& result,
+	char conv,
+	const _format_spec_t& spec,
+	const _format_param_base& param)
+{
+	char buffer[11];
+
+	char* end = buffer + sizeof(buffer);
+	char* begin = _int_to_str(end, param._int);
+
+	_replace_string_str(result, spec, begin, end);
+}
+
+static void _replace_string(
+	string& result,
+	char conv,
+	const _format_spec_t& spec,
+	const _format_param_base& param)
+{
+	switch(conv) {
+	default:
+	case 's':
+		_replace_string_str(result, spec, param._begin, param._end);
+		break;
+	case 'r':
+		_replace_string_repr(result, spec, param._begin, param._end);
+		break;
+	}
+}
+
 static void _replace_field(
 	string& result,
 	const vector<_format_index_t>& indices,
@@ -620,11 +727,11 @@ static void _replace_field(
 	case schar_id:
 	case uchar_id:
 	case char16_t_t:
-	case char32_t_t: _replace_char(result, conv, spec, param); break;
-	case wchar_t_t: break;
-	case short_id: break;
+	case char32_t_t: 
+	case wchar_t_t: _replace_char(result, conv, spec, param); break;
+	case short_id: _replace_integer(result, conv, spec, param); break;
 	case ushort_id: break;
-	case int_id: break;
+	case int_id: _replace_integer(result, conv, spec, param); break;
 	case uint_id: break;
 	case long_id: break;
 	case ulong_id: break;
@@ -632,8 +739,8 @@ static void _replace_field(
 	case ullong_id: break;
 	case float_id: break;
 	case double_id: break;
-	case std_string_id: break;
-	case c_string_id: break;
+	case std_string_id:
+	case c_string_id: _replace_string(result, conv, spec, param); break;
 	case to_string_id: break;
 	}
 }

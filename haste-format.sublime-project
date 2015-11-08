@@ -7,8 +7,28 @@
 				"${project_path}/build.py"
 			],
 			"name": "Build format...",
-			"working_dir": "${project_path}",
-			"shell": "true"
+			"shell": "true",
+			"variants":
+			[
+				{
+					"cmd":
+					[
+						"make"
+					],
+					"file_regex": "^(..[^:]*):([0-9]+):?([0-9]+)?:? (.*)$",
+					"name": "Build",
+					"shell": true
+				},
+				{
+					"cmd":
+					[
+						"${project_path}/build.py"
+					],
+					"file_regex": "^(..[^:]*):([0-9]+):?([0-9]+)?:? (.*)$",
+					"name": "Run"
+				}
+			],
+			"working_dir": "${project_path}"
 		}
 	],
 	"folders":

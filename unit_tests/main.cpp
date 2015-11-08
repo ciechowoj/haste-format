@@ -481,5 +481,28 @@ TEST(format, format_char_control) {
 	EXPECT_EQ(u8"'\\x7f'", format("{!a}", '\x7f'));
 }
 
+TEST(format, format_integer) {
+	EXPECT_EQ(u8"0", format("{}", 0));
+	EXPECT_EQ(u8"123", format("{}", 123));
+	EXPECT_EQ(u8"-123", format("{}", -123));
+}
 
+TEST(format, format_string_str) {
+	EXPECT_EQ(u8"Hello world!", format("{}", "Hello world!"));
+	EXPECT_EQ(u8"Hello world!        ", format("{:20}", "Hello world!"));
+	EXPECT_EQ(u8"        Hello world!", format("{:>20}", "Hello world!"));
+	EXPECT_EQ(u8"    Hello world!    ", format("{:^20}", "Hello world!"));
+}
+/*
+TEST(format, format_string_repr) {
+	EXPECT_EQ(u8"\"Hello world!\"", format("{!r}", "Hello world!"));
+	EXPECT_EQ(u8"\"Hello world!\"      ", format("{!r:20}", "Hello world!"));
+	EXPECT_EQ(u8"      \"Hello world!\"", format("{!r:>20}", "Hello world!"));
+	EXPECT_EQ(u8"   \"Hello world!\"   ", format("{!r:^20}", "Hello world!"));
+}
+
+TEST(format, format_string_repr_quotes) {
+	EXPECT_EQ(u8"   \"Hello \\\"world!\"   ", format("{!r:^20}", "Hello \"world!"));
+}
+*/
 
