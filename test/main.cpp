@@ -3,7 +3,7 @@
 #include <stdexcept> 
 
 using namespace haste;
-
+/*
 TEST(haste_format, _format_parse_name)
 {
 	int index = -1;
@@ -493,7 +493,7 @@ TEST(format, format_string_str) {
 	EXPECT_EQ(u8"        Hello world!", format("{:>20}", "Hello world!"));
 	EXPECT_EQ(u8"    Hello world!    ", format("{:^20}", "Hello world!"));
 }
-/*
+
 TEST(format, format_string_repr) {
 	EXPECT_EQ(u8"\"Hello world!\"", format("{!r}", "Hello world!"));
 	EXPECT_EQ(u8"\"Hello world!\"      ", format("{!r:20}", "Hello world!"));

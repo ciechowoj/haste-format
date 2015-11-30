@@ -8,6 +8,7 @@ googletest_root = "googletest/googletest"
 include_dirs = [
 	'{}/include'.format(googletest_root),
 	'include',
+	'/usr/include/OpenEXR',
 ]
 
 library_dirs = [
@@ -17,6 +18,31 @@ library_dirs = [
 
 cpp_flags = [
 	'-Wall',
+	'-g',
+]
+
+sources = [
+	'format',
+	'image',
+	'array',
+	'data_t',
+]
+
+tests = [
+	'test/main.cpp',
+	'test/image.test.cpp',
+	'test/misc.cpp',
+]
+
+libs = [
+	'-lformat',
+	'-lgtest_main', 
+	'-lgtest', 
+	'-pthread',
+	'-lpng',
+	'-ljpeg',
+	'-lIlmImf',
+	'-lIex',
 ]
 
 include_flags = ['-I{}'.format(x) for x in include_dirs]
@@ -25,12 +51,14 @@ library_flags = ['-L{}'.format(x) for x in library_dirs]
 os.makedirs('build', 0o755, exist_ok = True)
 
 def compile_format():
-	subprocess.check_call(['g++', '-std=c++11'] + cpp_flags + include_flags + ['-c', 'format.cpp', '-o', 'build/format.o'])
+	for source in sources:
+		subprocess.check_call(['g++', '-std=c++11'] + cpp_flags + include_flags + ['-c', '{}.cpp'.format(source), '-o', 'build/{}.o'.format(source)])
 
 try:
 	time = timeit.timeit(compile_format, number=1)
-	subprocess.check_call(['ar', 'rcs', 'build/libformat.a', 'build/format.o'])
-	subprocess.check_call(['g++', '-std=c++11', 'unit_tests/main.cpp', 'unit_tests/misc.cpp'] + cpp_flags + include_flags + library_flags + ['-lformat', '-lgtest_main', '-lgtest', '-pthread', '-o', 'build/test.bin'])
+	objects = ['build/{}.o'.format(source) for source in sources]
+	subprocess.check_call(['ar', 'rcs', 'build/libformat.a'] + objects)
+	subprocess.check_call(['g++', '-std=c++11'] + tests + cpp_flags + include_flags + library_flags + libs + ['-o', 'build/test.bin'])
 	print("Compilation time: ", time)
 except subprocess.CalledProcessError as error:
 	print('Compilation failed.')
