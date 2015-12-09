@@ -1,6 +1,9 @@
 #pragma once
+#include <cstddef>
 
 namespace haste {
+
+using std::size_t;
 
 class str;
 
@@ -15,25 +18,22 @@ public:
 	str();
 	str(const str&);
 	str(str&&);
-	str(const char*);
 	~str();
 
+	friend void swap(str&, str&);
 	str& operator=(const str&);
 	str& operator=(str&&);
-	str& operator=(const char*);
 
 	friend char* data(str& s);
 	friend const char* data(const str& s);
 	friend size_t nbytes(const str& s);
-	friend void swap(str&, str&);
 private:
 	char _data[32];
 };
 
-str make_str(const char* begin, const char* end);
-str make_str(const char* cstr);
-str make_str(char c, size_t n);
 str make_str();
+str make_str(const char* c_str);
+str make_str(const char* begin, const char* end);
 
 void replace(str& s, size_t i, size_t n, const char* begin, const char* end);
 void replace(str& s, size_t i, size_t n, const char* cstr);

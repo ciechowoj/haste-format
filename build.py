@@ -17,7 +17,16 @@ library_dirs = [
 
 cpp_flags = [
 	'-Wall',
+	'-std=c++11'
 ]
+
+sources = [
+	'format.cpp',
+	'str.cpp'
+]
+
+objects = ['build/{}.o'.format(source.replace('.cpp', '')) for source in sources]
+
 
 include_flags = ['-I{}'.format(x) for x in include_dirs]
 library_flags = ['-L{}'.format(x) for x in library_dirs]
@@ -25,12 +34,19 @@ library_flags = ['-L{}'.format(x) for x in library_dirs]
 os.makedirs('build', 0o755, exist_ok = True)
 
 def compile_format():
-	subprocess.check_call(['g++', '-std=c++11'] + cpp_flags + include_flags + ['-c', 'format.cpp', '-o', 'build/format.o'])
+	for source, object in zip(sources, objects):
+		subprocess.check_call(['g++'] + cpp_flags + include_flags + ['-c'] + [source] + ['-o'] + [object])
 
 try:
 	time = timeit.timeit(compile_format, number=1)
-	subprocess.check_call(['ar', 'rcs', 'build/libformat.a', 'build/format.o'])
-	subprocess.check_call(['g++', '-std=c++11', 'unit_tests/main.cpp', 'unit_tests/misc.cpp'] + cpp_flags + include_flags + library_flags + ['-lformat', '-lgtest_main', '-lgtest', '-pthread', '-o', 'build/test.bin'])
+	subprocess.check_call(['ar', 'rcs', 'build/libformat.a'] + objects)
+	subprocess.check_call([
+		'g++', '-std=c++11', 
+		'unit_tests/main.cpp', 
+		'unit_tests/misc.cpp', 
+		'unit_tests/str.test.cpp'] + cpp_flags + include_flags + library_flags + 
+		['-lformat', '-lgtest_main', '-lgtest', '-pthread', '-o', 'build/test.bin'])
+
 	print("Compilation time: ", time)
 except subprocess.CalledProcessError as error:
 	print('Compilation failed.')
