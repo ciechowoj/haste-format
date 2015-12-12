@@ -1,34 +1,66 @@
 #include <gtest/gtest.h>
+#include <haste/_str.hpp>
 #include <haste/str.hpp>
 
 using namespace haste;
+using namespace haste::detail;
 
-TEST(str, basic1) {
-	auto _0 = str();
-	auto _1 = str(_0);
-	auto _2 = str(std::move(_1));
+TEST(str_t, init)
+{
+	char zeros[sizeof(str_t)];
+	::memset(&zeros, 0, sizeof(str_t));
 
-	_1 = _0;
-	_2 = std::move(_2);
-	_0 = std::move(_2);
+	str_t a;
+	init(&a);
 
-	ASSERT_EQ(0, nbytes(_0));
-	ASSERT_EQ(0, nbytes(_1));
-	ASSERT_EQ(0, nbytes(_2));
-
-	ASSERT_STREQ("", data(_0));
-	ASSERT_STREQ("", data(_1));
-	ASSERT_STREQ("", data(_2));
+	ASSERT_TRUE(::memcmp(&a, zeros, sizeof(str_t)) == 0);
+	ASSERT_STREQ("", data(&a));
+	ASSERT_EQ(0, nbytes(&a));
+	ASSERT_EQ(sizeof(str_t) - 1, capacity(&a));
 }
 
-TEST(str, basic2) {
-	const char* _c12 = "Hello world!";
-	const char* _c81 = "00000111112222233333444445555566666777778888899999AAAAABBBBBCCCCCDDDDDEEEEEFFFFF!";
-	auto _0 = make_str();
-	auto _12 = make_str(_c12);
-	auto _81 = make_str(_c81);
+TEST(str_t, init_copy)
+{
+	char zeros[sizeof(str_t)];
+	::memset(&zeros, 0, sizeof(str_t));
 
-	ASSERT_STREQ(_c12, data(_12));
-	ASSERT_STREQ(_c81, data(_81));
+	str_t a, b;
+	init(&a);
+	init_copy(&b, &a);
+
+	ASSERT_TRUE(::memcmp(&b, zeros, sizeof(str_t)) == 0);
+	ASSERT_STREQ("", data(&b));
+	ASSERT_EQ(0, nbytes(&b));
+	ASSERT_EQ(sizeof(str_t) - 1, capacity(&b));
 }
+
+TEST(str_t, init_move)
+{
+	char zeros[sizeof(str_t)];
+	::memset(&zeros, 0, sizeof(str_t));
+
+	str_t a, b;
+	init(&a);
+	init_move(&b, &a);
+
+	ASSERT_TRUE(::memcmp(&b, zeros, sizeof(str_t)) == 0);
+	ASSERT_STREQ("", data(&b));
+	ASSERT_EQ(0, nbytes(&b));
+	ASSERT_EQ(sizeof(str_t) - 1, capacity(&b));
+}
+
+TEST(str, basic) {
+	ASSERT_STREQ("", str().data());
+	ASSERT_EQ(0, str(str()).nbytes());
+	ASSERT_EQ(0, str(std::move(str())).nbytes());
+
+	str a, b;
+
+	a = b;
+	ASSERT_EQ(0, a.nbytes());
+	a = std::move(b);
+	ASSERT_EQ(0, a.nbytes());
+}
+
+
 

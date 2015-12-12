@@ -27,6 +27,12 @@ sources = [
 
 objects = ['build/{}.o'.format(source.replace('.cpp', '')) for source in sources]
 
+tests = [
+	'unit_tests/main.cpp', 
+	'unit_tests/misc.cpp', 
+	'unit_tests/str.test.cpp',
+]
+
 
 include_flags = ['-I{}'.format(x) for x in include_dirs]
 library_flags = ['-L{}'.format(x) for x in library_dirs]
@@ -41,10 +47,7 @@ try:
 	time = timeit.timeit(compile_format, number=1)
 	subprocess.check_call(['ar', 'rcs', 'build/libformat.a'] + objects)
 	subprocess.check_call([
-		'g++', '-std=c++11', 
-		'unit_tests/main.cpp', 
-		'unit_tests/misc.cpp', 
-		'unit_tests/str.test.cpp'] + cpp_flags + include_flags + library_flags + 
+		'g++', '-std=c++11'] + tests + cpp_flags + include_flags + library_flags + 
 		['-lformat', '-lgtest_main', '-lgtest', '-pthread', '-o', 'build/test.bin'])
 
 	print("Compilation time: ", time)

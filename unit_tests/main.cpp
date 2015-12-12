@@ -1,508 +1,161 @@
 ﻿#include <gtest/gtest.h>
-#include <haste/_format.hpp>
-#include <stdexcept> 
 
-using namespace haste;
+using namespace testing;
 
-TEST(haste_format, _format_parse_name)
+class ConfigurableEventListener : public TestEventListener
 {
-	int index = -1;
-	vector<_format_index_t> indices;
-	const char* begin, *end;
+    
+protected:
+    TestEventListener* eventListener;
+    
+public:
+    
+    /**
+     * Show the names of each test case.
+     */
+    bool showTestCases;
+    
+    /**
+     * Show the names of each test.
+     */
+    bool showTestNames;
+    
+    /**
+     * Show each success.
+     */
+    bool showSuccesses;
+    
+    /**
+     * Show each failure as it occurs. You will also see it at the bottom after the full suite is run.
+     */
+    bool showInlineFailures;
+    
+    /**
+     * Show the setup of the global environment.
+     */
+    bool showEnvironment;
+    
+    explicit ConfigurableEventListener(TestEventListener* theEventListener) : eventListener(theEventListener)
+    {
+        showTestCases = true;
+        showTestNames = true;
+        showSuccesses = true;
+        showInlineFailures = true;
+        showEnvironment = true;
+    }
+    
+    virtual ~ConfigurableEventListener()
+    {
+    }
+    
+    virtual void OnTestProgramStart(const UnitTest& unit_test)
+    {
+        eventListener->OnTestProgramStart(unit_test);
+    }
+    
+    virtual void OnTestIterationStart(const UnitTest& unit_test, int iteration)
+    {
+        eventListener->OnTestIterationStart(unit_test, iteration);
+    }
+    
+    virtual void OnEnvironmentsSetUpStart(const UnitTest& unit_test)
+    {
+        if(showEnvironment) {
+            eventListener->OnEnvironmentsSetUpStart(unit_test);
+        }
+    }
+    
+    virtual void OnEnvironmentsSetUpEnd(const UnitTest& unit_test)
+    {
+        if(showEnvironment) {
+            eventListener->OnEnvironmentsSetUpEnd(unit_test);
+        }
+    }
+    
+    virtual void OnTestCaseStart(const TestCase& test_case)
+    {
+        if(showTestCases) {
+            eventListener->OnTestCaseStart(test_case);
+        }
+    }
+    
+    virtual void OnTestStart(const TestInfo& test_info)
+    {
+        if(showTestNames) {
+            eventListener->OnTestStart(test_info);
+        }
+    }
+    
+    virtual void OnTestPartResult(const TestPartResult& result)
+    {
+        eventListener->OnTestPartResult(result);
+    }
+    
+    virtual void OnTestEnd(const TestInfo& test_info)
+    {
+        if((showInlineFailures && test_info.result()->Failed()) || (showSuccesses && !test_info.result()->Failed())) {
+            eventListener->OnTestEnd(test_info);
+        }
+    }
+    
+    virtual void OnTestCaseEnd(const TestCase& test_case)
+    {
+        if(showTestCases) {
+            eventListener->OnTestCaseEnd(test_case);
+        }
+    }
+    
+    virtual void OnEnvironmentsTearDownStart(const UnitTest& unit_test)
+    {
+        if(showEnvironment) {
+            eventListener->OnEnvironmentsTearDownStart(unit_test);
+        }
+    }
+    
+    virtual void OnEnvironmentsTearDownEnd(const UnitTest& unit_test)
+    {
+        if(showEnvironment) {
+            eventListener->OnEnvironmentsTearDownEnd(unit_test);
+        }
+    }
+    
+    virtual void OnTestIterationEnd(const UnitTest& unit_test, int iteration)
+    {
+        eventListener->OnTestIterationEnd(unit_test, iteration);
+    }
+    
+    virtual void OnTestProgramEnd(const UnitTest& unit_test)
+    {
+        eventListener->OnTestProgramEnd(unit_test);
+    }
+    
+};
 
-	#define EXPECT_NAME_PARSED(expected_index, expected_end, name) \
-		index = -1; \
-		indices.clear(); \
-		begin = name; \
-		end = begin + _strlen(begin); \
-		ASSERT_EQ(expected_end, *_format_parse_name(index, indices, begin, end)); \
-		EXPECT_EQ(expected_index, index);
-
-	EXPECT_NAME_PARSED(-1, '\0', "");
-	EXPECT_NAME_PARSED(0, '\0', "0");
-	EXPECT_NAME_PARSED(1, '\0', "1");
-	EXPECT_NAME_PARSED(2, '\0', "2");
-	EXPECT_NAME_PARSED(9, '\0', "9");
-	EXPECT_NAME_PARSED(10, '\0', "10");
-	EXPECT_NAME_PARSED(42, '\0', "42");
-	EXPECT_NAME_PARSED(1234321, '\0', "1234321");
-	EXPECT_NAME_PARSED(-1, '-', "-");
-	EXPECT_NAME_PARSED(123, ':', "123:");
-	EXPECT_NAME_PARSED(123, '}', "123}");
-	EXPECT_NAME_PARSED(7, '!', "7!");
-
-	EXPECT_NAME_PARSED(0, '\0', "0[0]");
-	ASSERT_EQ(1, indices.size());
-	EXPECT_STREQ("0", string(indices[0].begin, indices[0].end).c_str());
-
-	EXPECT_NAME_PARSED(0, '\0', "0[a]");
-	ASSERT_EQ(1, indices.size());
-	EXPECT_STREQ("a", string(indices[0].begin, indices[0].end).c_str());
-
-	EXPECT_NAME_PARSED(0, '\0', "0[0][12]");
-	ASSERT_EQ(2, indices.size());
-	EXPECT_TRUE(indices[0].is_integer);
-	EXPECT_STREQ("0", string(indices[0].begin, indices[0].end).c_str());
-	EXPECT_TRUE(indices[1].is_integer);	
-	EXPECT_STREQ("12", string(indices[1].begin, indices[1].end).c_str());
-
-	EXPECT_NAME_PARSED(0, '\0', "0[0][12a]");
-	ASSERT_EQ(2, indices.size());
-	EXPECT_TRUE(indices[0].is_integer);
-	EXPECT_STREQ("0", string(indices[0].begin, indices[0].end).c_str());
-	EXPECT_FALSE(indices[1].is_integer);	
-	EXPECT_STREQ("12a", string(indices[1].begin, indices[1].end).c_str());
-
-	#undef EXPECT_NAME_PARSED
-
-	#define EXPECT_NAME_THROWS(name) \
-		index = -1; \
-		begin = name; \
-		end = begin + _strlen(begin); \
-		EXPECT_THROW(_format_parse_name(index, indices, begin, end), std::invalid_argument);
-
-	EXPECT_NAME_THROWS("7[");
-	EXPECT_NAME_THROWS("7[123");
-	EXPECT_NAME_THROWS("7[123!");
-	EXPECT_NAME_THROWS("7[123][abba");
-	EXPECT_NAME_THROWS("7[123][abba][");
-	EXPECT_NAME_THROWS("7[123][]");
-
-	#undef EXPECT_NAME_THROWS
-}
-
-TEST(haste_format, _format_parse_conv)
+int main(int argc, char **argv)
 {
-	char conv;
-	vector<_format_index_t> indices;
-	const char* begin, *end;
-
-	#define EXPECT_CONV_PARSED(expected_conv, expected_end, name) \
-		conv = 0; \
-		begin = name; \
-		end = begin + _strlen(begin); \
-		ASSERT_EQ(expected_end, *_format_parse_conv(conv, begin, end)); \
-		EXPECT_EQ(expected_conv, conv);
-
-	EXPECT_CONV_PARSED('r', '\0', "!r");
-	EXPECT_CONV_PARSED('s', '\0', "!s");
-	EXPECT_CONV_PARSED('a', '\0', "!a");
-	EXPECT_CONV_PARSED('a', 'a', "!aa");
-	EXPECT_CONV_PARSED('a', ':', "!a:");
-
-	#undef EXPECT_CONV_PARSED
-
-	#define EXPECT_CONV_THROWS(name) \
-		conv = 0; \
-		begin = name; \
-		end = begin + _strlen(begin); \
-		EXPECT_THROW(_format_parse_conv(conv, begin, end), std::invalid_argument);
-
-	EXPECT_CONV_THROWS("!");
-	EXPECT_CONV_THROWS("!q");
-	EXPECT_CONV_THROWS("!!");
-	EXPECT_CONV_THROWS("!:");
-
-	#undef EXPECT_CONV_THROWS
+    // initialize
+    ::testing::InitGoogleTest(&argc, argv);
+    
+    // remove the default listener
+    testing::TestEventListeners& listeners = testing::UnitTest::GetInstance()->listeners();
+    auto default_printer = listeners.Release(listeners.default_result_printer());
+    
+    // add our listener, by default everything is on (the same as using the default listener)
+    // here I am turning everything off so I only see the 3 lines for the result
+    // (plus any failures at the end), like:
+    
+    // [==========] Running 149 tests from 53 test cases.
+    // [==========] 149 tests from 53 test cases ran. (1 ms total)
+    // [  PASSED  ] 149 tests.
+    
+    ConfigurableEventListener *listener = new ConfigurableEventListener(default_printer);
+    listener->showEnvironment = false;
+    listener->showTestCases = false;
+    listener->showTestNames = false;
+    listener->showSuccesses = false;
+    listener->showInlineFailures = false;
+    listeners.Append(listener);
+    
+    // run
+    return RUN_ALL_TESTS();
 }
-
-TEST(haste_format, _format_parse_spec_SINGLE)
-{
-	_format_spec_t spec;
-	const char* begin, *end;
-
-	#define EXPECT_SPEC_PARSED(expected_end, name) \
-		spec = _format_spec_t(); \
-		begin = name; \
-		end = begin + _strlen(begin); \
-		ASSERT_EQ(expected_end, *_format_parse_spec(spec, 17, begin, end)); \
-
-	EXPECT_SPEC_PARSED('\0', "");
-	EXPECT_EQ(string(), spec.fill);
-	EXPECT_EQ(0, spec.width);
-	EXPECT_EQ(0, spec.precision);
-	EXPECT_EQ(0, spec.align);
-	EXPECT_EQ(0, spec.sign);
-	EXPECT_EQ(0, spec.type);
-	EXPECT_FALSE(spec.hash);
-	EXPECT_FALSE(spec.zero);
-	EXPECT_FALSE(spec.comma);
-
-	EXPECT_SPEC_PARSED('\0', ":");
-	EXPECT_EQ(string(), spec.fill);
-	EXPECT_EQ(0, spec.width);
-	EXPECT_EQ(0, spec.precision);
-	EXPECT_EQ(0, spec.align);
-	EXPECT_EQ(0, spec.sign);
-	EXPECT_EQ(0, spec.type);
-	EXPECT_FALSE(spec.hash);
-	EXPECT_FALSE(spec.zero);
-	EXPECT_FALSE(spec.comma);
-	
-	EXPECT_SPEC_PARSED('\0', ":a=");
-	EXPECT_EQ("a", spec.fill);
-	EXPECT_EQ(0, spec.width);
-	EXPECT_EQ(0, spec.precision);
-	EXPECT_EQ('=', spec.align);
-	EXPECT_EQ(0, spec.sign);
-	EXPECT_EQ(0, spec.type);
-	EXPECT_FALSE(spec.hash);
-	EXPECT_FALSE(spec.zero);
-	EXPECT_FALSE(spec.comma);
-
-	EXPECT_SPEC_PARSED('{', ":{=");
-	EXPECT_SPEC_PARSED('s', ":xs}="); 
-	EXPECT_EQ("", spec.fill);
-	EXPECT_EQ(0, spec.width);
-	EXPECT_EQ(0, spec.precision);
-	EXPECT_EQ(0, spec.align);
-	EXPECT_EQ(0, spec.sign);
-	EXPECT_EQ('x', spec.type);
-	EXPECT_FALSE(spec.hash);
-	EXPECT_FALSE(spec.zero);
-	EXPECT_FALSE(spec.comma);
-
-	EXPECT_SPEC_PARSED('\0', ":x<");
-	EXPECT_EQ("x", spec.fill);
-	EXPECT_EQ(0, spec.width);
-	EXPECT_EQ(0, spec.precision);
-	EXPECT_EQ('<', spec.align);
-	EXPECT_EQ(0, spec.sign);
-	EXPECT_EQ(0, spec.type);
-	EXPECT_FALSE(spec.hash);
-	EXPECT_FALSE(spec.zero);
-	EXPECT_FALSE(spec.comma);
-
-	EXPECT_SPEC_PARSED('\0', ":x=");
-	EXPECT_EQ("x", spec.fill);
-	EXPECT_EQ('=', spec.align);
-
-	EXPECT_SPEC_PARSED('\0', ":-");
-	EXPECT_EQ("", spec.fill);
-	EXPECT_EQ(0, spec.width);
-	EXPECT_EQ(0, spec.precision);
-	EXPECT_EQ(0, spec.align);
-	EXPECT_EQ('-', spec.sign);
-	EXPECT_EQ(0, spec.type);
-	EXPECT_FALSE(spec.hash);
-	EXPECT_FALSE(spec.zero);
-	EXPECT_FALSE(spec.comma);
-
-	EXPECT_SPEC_PARSED('\0', ":#");
-	EXPECT_EQ("", spec.fill);
-	EXPECT_EQ(0, spec.width);
-	EXPECT_EQ(0, spec.precision);
-	EXPECT_EQ(0, spec.align);
-	EXPECT_EQ(0, spec.sign);
-	EXPECT_EQ(0, spec.type);
-	EXPECT_TRUE(spec.hash);
-	EXPECT_FALSE(spec.zero);
-	EXPECT_FALSE(spec.comma);
-
-	EXPECT_SPEC_PARSED('\0', ":0");
-	EXPECT_EQ("0", spec.fill);
-	EXPECT_EQ(0, spec.width);
-	EXPECT_EQ(0, spec.precision);
-	EXPECT_EQ('=', spec.align);
-	EXPECT_EQ(0, spec.sign);
-	EXPECT_EQ(0, spec.type);
-	EXPECT_FALSE(spec.hash);
-	EXPECT_TRUE(spec.zero);
-	EXPECT_FALSE(spec.comma);
-
-	EXPECT_SPEC_PARSED('\0', ":x<0");
-	EXPECT_EQ("x", spec.fill);
-	EXPECT_EQ(0, spec.width);
-	EXPECT_EQ(0, spec.precision);
-	EXPECT_EQ('<', spec.align);
-	EXPECT_EQ(0, spec.sign);
-	EXPECT_EQ(0, spec.type);
-	EXPECT_FALSE(spec.hash);
-	EXPECT_TRUE(spec.zero);
-	EXPECT_FALSE(spec.comma);
-
-	EXPECT_SPEC_PARSED('\0', ":<0");
-	EXPECT_EQ("0", spec.fill);
-	EXPECT_EQ(0, spec.width);
-	EXPECT_EQ(0, spec.precision);
-	EXPECT_EQ('<', spec.align);
-	EXPECT_EQ(0, spec.sign);
-	EXPECT_EQ(0, spec.type);
-	EXPECT_FALSE(spec.hash);
-	EXPECT_TRUE(spec.zero);
-	EXPECT_FALSE(spec.comma);
-
-	EXPECT_SPEC_PARSED('\0', ":1");
-	EXPECT_EQ(" ", spec.fill);
-	EXPECT_EQ(1, spec.width);
-	EXPECT_EQ(0, spec.precision);
-	EXPECT_EQ(0, spec.align);
-	EXPECT_EQ(0, spec.sign);
-	EXPECT_EQ(0, spec.type);
-	EXPECT_FALSE(spec.hash);
-	EXPECT_FALSE(spec.zero);
-	EXPECT_FALSE(spec.comma);
-
-	EXPECT_SPEC_PARSED('\0', ":42");
-	EXPECT_EQ(" ", spec.fill);
-	EXPECT_EQ(42, spec.width);
-	EXPECT_EQ(0, spec.precision);
-	EXPECT_EQ(0, spec.align);
-	EXPECT_EQ(0, spec.sign);
-	EXPECT_EQ(0, spec.type);
-	EXPECT_FALSE(spec.hash);
-	EXPECT_FALSE(spec.zero);
-	EXPECT_FALSE(spec.comma);
-
-	EXPECT_SPEC_PARSED('\0', ":,");
-	EXPECT_EQ("", spec.fill);
-	EXPECT_EQ(0, spec.width);
-	EXPECT_EQ(0, spec.precision);
-	EXPECT_EQ(0, spec.align);
-	EXPECT_EQ(0, spec.sign);
-	EXPECT_EQ(0, spec.type);
-	EXPECT_FALSE(spec.hash);
-	EXPECT_FALSE(spec.zero);
-	EXPECT_TRUE(spec.comma);
-
-	EXPECT_SPEC_PARSED('\0', ":.123");
-	EXPECT_EQ("", spec.fill);
-	EXPECT_EQ(0, spec.width);
-	EXPECT_EQ(123, spec.precision);
-	EXPECT_EQ(0, spec.align);
-	EXPECT_EQ(0, spec.sign);
-	EXPECT_EQ(0, spec.type);
-	EXPECT_FALSE(spec.hash);
-	EXPECT_FALSE(spec.zero);
-	EXPECT_FALSE(spec.comma);
-
-	EXPECT_SPEC_PARSED('%', ":%%");
-	EXPECT_EQ("", spec.fill);
-	EXPECT_EQ(0, spec.width);
-	EXPECT_EQ(0, spec.precision);
-	EXPECT_EQ(0, spec.align);
-	EXPECT_EQ(0, spec.sign);
-	EXPECT_EQ('%', spec.type);
-	EXPECT_FALSE(spec.hash);
-	EXPECT_FALSE(spec.zero);
-	EXPECT_FALSE(spec.comma);
-
-	EXPECT_SPEC_PARSED('\0', ":<");
-	EXPECT_EQ("", spec.fill);
-	EXPECT_EQ(0, spec.width);
-	EXPECT_EQ(0, spec.precision);
-	EXPECT_EQ('<', spec.align);
-	EXPECT_EQ(0, spec.sign);
-	EXPECT_EQ(0, spec.type);
-	EXPECT_FALSE(spec.hash);
-	EXPECT_FALSE(spec.zero);
-	EXPECT_FALSE(spec.comma);
-
-	#undef EXPECT_SPEC_PARSED
-
-	#define EXPECT_SPEC_THROWS(name) \
-		spec = _format_spec_t(); \
-		begin = name; \
-		end = begin + _strlen(begin); \
-		EXPECT_THROW(_format_parse_spec(spec, 17, begin, end), std::invalid_argument);
-
-	EXPECT_SPEC_THROWS(":.");
-	EXPECT_SPEC_THROWS(":.%%");
-
-	#undef EXPECT_SPEC_THROWS
-}
-
-TEST(haste_format, _format_parse_spec_MISMATCH) {
-	_format_spec_t spec;
-	const char* begin, *end;
-
-	#define EXPECT_SPEC_THROWS(id, name) \
-		spec = _format_spec_t(); \
-		begin = name; \
-		end = begin + _strlen(begin); \
-		EXPECT_THROW(_format_parse_spec(spec, id, begin, end), std::invalid_argument);
-
-	EXPECT_SPEC_THROWS(null_id, ":,");
-	EXPECT_SPEC_THROWS(std_string_id, ":#");
-
-	#undef EXPECT_SPEC_THROWS	
-}
-
-TEST(haste_format, _format_parse_spec_MULTIPLE)
-{
-	_format_spec_t spec;
-	const char* begin, *end;
-
-	#define EXPECT_SPEC_PARSED(expected_end, name) \
-		spec = _format_spec_t(); \
-		begin = name; \
-		end = begin + _strlen(begin); \
-		ASSERT_EQ(expected_end, *_format_parse_spec(spec, 17, begin, end));
-
-	EXPECT_SPEC_PARSED('\0', ":w=-#0123,.34X");
-	EXPECT_EQ("w", spec.fill);
-	EXPECT_EQ(123, spec.width);
-	EXPECT_EQ(34, spec.precision);
-	EXPECT_EQ('=', spec.align);
-	EXPECT_EQ('-', spec.sign);
-	EXPECT_EQ('X', spec.type);
-	EXPECT_TRUE(spec.hash);
-	EXPECT_TRUE(spec.zero);
-	EXPECT_TRUE(spec.comma);
-	
-	EXPECT_SPEC_PARSED('\0', ":");
-	EXPECT_EQ("", spec.fill);
-	EXPECT_EQ(0, spec.width);
-	EXPECT_EQ(0, spec.precision);
-	EXPECT_EQ(0, spec.align);
-	EXPECT_EQ(0, spec.sign);
-	EXPECT_EQ(0, spec.type);
-	EXPECT_FALSE(spec.hash);
-	EXPECT_FALSE(spec.zero);
-	EXPECT_FALSE(spec.comma);
-
-	#undef EXPECT_SPEC_PARSED
-}
-
-TEST(format, escape_sequences) {
-	EXPECT_EQ("", format(""));
-	EXPECT_EQ("A", format("A"));
-
-	EXPECT_EQ("{", format("{{"));
-	EXPECT_EQ("}", format("}}"));
-	EXPECT_EQ("{}", format("{{}}"));
-}
-
-TEST(format, unmatched_braces)
-{
-	EXPECT_THROW(format("}"), std::invalid_argument);
-	EXPECT_THROW(format("{"), std::invalid_argument);
-}
-
-TEST(format, automatic_numbering) 
-{
-	EXPECT_THROW(format("{}{0}", 0, 1), std::invalid_argument);
-	EXPECT_THROW(format("{0}{}", 0, 1), std::invalid_argument);
-}
-
-TEST(format, not_indexable) {
-	EXPECT_THROW(format("{0[0]}", 0), std::invalid_argument);
-	EXPECT_THROW(format("{0[0]}", '\0'), std::invalid_argument);
-	EXPECT_THROW(format("{0[0]}", "string"), std::invalid_argument);
-}
-
-TEST(format, specifier_unsupported_for_type) {
-	EXPECT_THROW(format("{0:#}", nullptr), std::invalid_argument);	
-	EXPECT_THROW(format("{0:,}", string()), std::invalid_argument);
-	EXPECT_THROW(format("{0:+0}", "sudo"), std::invalid_argument);
-	EXPECT_THROW(format("{0: .123}", string()), std::invalid_argument);
-}
-
-TEST(format, specifier_supported_for_type) {
-	EXPECT_NO_THROW(format("{0:#}", 0));	
-	EXPECT_NO_THROW(format("{0:,}", 0.0));
-	EXPECT_NO_THROW(format("{0:+0}", 80ull));
-	EXPECT_NO_THROW(format("{0:.123}", 42.0f));
-}
-
-TEST(format, eq_allowed_for_numeric_only) {
-	EXPECT_THROW(format("{0:==}", string()), std::invalid_argument);
-	EXPECT_THROW(format("{0:=}", string()), std::invalid_argument);
-}
-
-TEST(format, format_nullptr) {
-	EXPECT_EQ("nullptr", format("{}", nullptr));
-	EXPECT_EQ("nullptr   ", format("{:10}", nullptr));
-	EXPECT_EQ("nullptr   ", format("{:<10}", nullptr));
-	EXPECT_EQ("   nullptr", format("{:>10}", nullptr));
-	EXPECT_EQ(" nullptr  ", format("{:^10}", nullptr));
-
-	EXPECT_EQ("nullptr<<<", format("{:<<10}", nullptr));
-	EXPECT_EQ("<<<nullptr", format("{:<>10}", nullptr));
-	EXPECT_EQ(">nullptr>>", format("{:>^10}", nullptr));
-
-	EXPECT_EQ("nullptr000", format("{:<010}", nullptr));
-	EXPECT_EQ("000nullptr", format("{:>010}", nullptr));
-	EXPECT_EQ("0nullptr00", format("{:^010}", nullptr));
-
-	EXPECT_EQ("null      ", format("{:<10.4}", nullptr));
-	EXPECT_EQ("      null", format("{:>10.4}", nullptr));
-	EXPECT_EQ("   null   ", format("{:^10.4}", nullptr));
-
-	EXPECT_EQ("          ", format("{:<10.0}", nullptr));
-	EXPECT_EQ("          ", format("{:>10.0}", nullptr));
-	EXPECT_EQ("          ", format("{:^10.0}", nullptr));
-
-	EXPECT_EQ("nullp", format("{:<5.5}", nullptr));
-	EXPECT_EQ("nullp", format("{:>5.5}", nullptr));
-	EXPECT_EQ("nullp", format("{:^5.5}", nullptr));
-
-	EXPECT_EQ("nullptr   ", format("{!r:<10}", nullptr));
-	EXPECT_EQ("nullptr   ", format("{!a:<10}", nullptr));
-}
-
-TEST(format, format_bool) {
-	EXPECT_EQ(" true ", format("{:^6}", true));
-	EXPECT_EQ(" false ", format("{:^7}", false));
-	EXPECT_EQ("false", format("{!r}", false));
-	EXPECT_EQ("false", format("{!s}", false));
-	EXPECT_EQ("false", format("{!a}", false));
-}
-
-TEST(format, format_char) {
-	EXPECT_EQ("'a'", format("{!r}", 'a'));
-	EXPECT_EQ("a", format("{!s}", 'a'));
-	EXPECT_EQ("'a'", format("{!a}", 'a'));
-
-	EXPECT_EQ(u8"'Ť'", format("{!r}", u'Ť'));
-	EXPECT_EQ(u8"Ť", format("{!s}", u'Ť'));
-	EXPECT_EQ(u8"'\\u0164'", format("{!a}", u'Ť'));
-
-	EXPECT_EQ(u8"'ł'", format("{!r}", u'ł'));
-	EXPECT_EQ(u8"ł", format("{!s}", u'ł'));
-	EXPECT_EQ(u8"'\\u0142'", format("{!a}", u'ł'));
-
-	EXPECT_EQ(u8"'Ä'", format("{!r}", u'Ä'));
-	EXPECT_EQ(u8"Ä", format("{!s}", u'Ä'));
-	EXPECT_EQ(u8"'\\xc4'", format("{!a}", u'Ä'));
-
-	EXPECT_EQ(u8"'\U00012060'", format("{!r}", U'\U00012060'));
-	EXPECT_EQ(u8"\U00012060", format("{!s}", U'\U00012060'));
-	EXPECT_EQ(u8"'\\U00012060'", format("{!a}", U'\U00012060'));
-}
-
-TEST(format, format_char_control) {
-	EXPECT_EQ(u8"'\\t'", format("{!a}", u'\t'));
-	EXPECT_EQ(u8"'\\r'", format("{!a}", u'\r'));
-	EXPECT_EQ(u8"'\\n'", format("{!a}", '\n'));
-
-	EXPECT_EQ(u8"'\\x00'", format("{!a}", '\0'));
-	EXPECT_EQ(u8"'\\x0b'", format("{!a}", '\v'));
-	EXPECT_EQ(u8"'\\x7f'", format("{!a}", '\x7f'));
-}
-
-TEST(format, format_integer) {
-	EXPECT_EQ(u8"0", format("{}", 0));
-	EXPECT_EQ(u8"123", format("{}", 123));
-	EXPECT_EQ(u8"-123", format("{}", -123));
-}
-
-TEST(format, format_string_str) {
-	EXPECT_EQ(u8"Hello world!", format("{}", "Hello world!"));
-	EXPECT_EQ(u8"Hello world!        ", format("{:20}", "Hello world!"));
-	EXPECT_EQ(u8"        Hello world!", format("{:>20}", "Hello world!"));
-	EXPECT_EQ(u8"    Hello world!    ", format("{:^20}", "Hello world!"));
-}
-/*
-TEST(format, format_string_repr) {
-	EXPECT_EQ(u8"\"Hello world!\"", format("{!r}", "Hello world!"));
-	EXPECT_EQ(u8"\"Hello world!\"      ", format("{!r:20}", "Hello world!"));
-	EXPECT_EQ(u8"      \"Hello world!\"", format("{!r:>20}", "Hello world!"));
-	EXPECT_EQ(u8"   \"Hello world!\"   ", format("{!r:^20}", "Hello world!"));
-}
-
-TEST(format, format_string_repr_quotes) {
-	EXPECT_EQ(u8"   \"Hello \\\"world!\"   ", format("{!r:^20}", "Hello \"world!"));
-}
-*/
-

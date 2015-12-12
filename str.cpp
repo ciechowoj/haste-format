@@ -1,3 +1,4 @@
+#include <haste/_str.hpp>
 #include <haste/str.hpp>
 #include <cstring>
 #include <cstdlib>
@@ -5,145 +6,111 @@
 #include <utility>
 
 namespace haste {
+namespace detail {
 
-using std::memset;
-using std::memcpy;
-using std::strlen;
+static_assert(sizeof(str_t::sso_t) == sizeof(str_t), "Sizes must match.");
 
-struct _str_t {
-	size_t capacity;
-	size_t size;
-	char* data;
-};
+static const unsigned char sso_mask = 1u << 7;
 
-inline _str_t* _str(str* s) {
-	return reinterpret_cast<_str_t*>(s);
+inline bool sso(const str_t* x) {
+	return (x->sso.size && sso_mask) == 0;
 }
 
-inline const _str_t* _str(const str* s) {
-	return reinterpret_cast<const _str_t*>(s);
+void init(str_t* x) {
+	std::memset(x, 0, sizeof(str_t));
 }
 
-inline bool _sso(const str* s) {
-	const char* _data = reinterpret_cast<const char*>(s);
-	
-	#if __BYTE_ORDER__ == __ORDER_LITTLE_ENDIAN__
-	return (_data[0] & 1) == 0;
-	#elif __BYTE_ORDER__ == __ORDER_BIG_ENDIAN__
-	return (_data[0] & (1 << 7)) == 0;
-	#else
-	#error "Unsupported byte order."
-	#endif
+void init_copy(str_t* x, const str_t* s) {
+	if (sso(s)) {
+		std::memcpy(x, s, sizeof(str_t));
+	}
+	else {
+		x->heap.data = static_cast<char*>(::malloc(s->heap.capacity));
+		x->heap.size = s->heap.size;
+		x->heap.capacity = s->heap.capacity;
+		std::memcpy(x->heap.data, s->heap.data, s->heap.size + 1);
+	}
 }
 
-inline size_t _capacity(const str* s) {
-	const _str_t* _str = reinterpret_cast<const _str_t*>(s);
-
-	#if __BYTE_ORDER__ == __ORDER_LITTLE_ENDIAN__
-	return _str -> capacity >> 1;
-	#elif __BYTE_ORDER__ == __ORDER_BIG_ENDIAN__
-	return _str -> capacity << 1 >> 1;
-	#else
-	#error "Unsupported byte order."
-	#endif	
+void init_move(str_t* x, str_t* s)
+{
+	std::memcpy(x, s, sizeof(str_t));
+	std::memset(s, 0, sizeof(str_t));
 }
 
-inline void _set_capacity(str* s, size_t capacity) {
-	_str_t* _str = reinterpret_cast<_str_t*>(s);
+void clean(str_t* x) {
+	if (!sso(x)) {
+		::free(x->heap.data);
+	}
+}
 
-	#if __BYTE_ORDER__ == __ORDER_LITTLE_ENDIAN__
-	_str -> capacity = (capacity << 1) | 1;
-	#elif __BYTE_ORDER__ == __ORDER_BIG_ENDIAN__
-	_str -> capacity = capacity | ~(~size_t(0) << 1 >> 1);
-	#else
-	#error "Unsupported byte order."
-	#endif	
+void swap(str_t* x, str_t* y) {
+	char t[sizeof(str_t)];
+	std::memcpy(t, y, sizeof(str_t));
+	std::memcpy(y, x, sizeof(str_t));
+	std::memcpy(x, t, sizeof(str_t));
+}
+
+char* data(str_t* x) {
+	if (sso(x)) {
+		return x->sso.data;
+	}
+	else {
+		return x->heap.data;
+	}
+}
+
+const char* data(const str_t* x) {
+	if (sso(x)) {
+		return x->sso.data;
+	}
+	else {
+		return x->heap.data;
+	}
+}
+
+size_t nbytes(const str_t* x) {
+	if (sso(x)) {
+		return x->sso.size;
+	}
+	else {
+		return x->heap.size;
+	}
+}
+
+size_t capacity(const str_t* x) {
+	if (sso(x)) {
+		return sizeof(x->sso.data) - 1;
+	}
+	else {
+		return x->heap.capacity;
+	}	
+}
+
+}
+
+using namespace detail;
+
+static_assert(sizeof(str_t) == sizeof(str), "Sizes must match.");
+
+inline str_t* cast(str* x) {
+	return reinterpret_cast<str_t*>(x);
+}
+
+inline const str_t* cast(const str* x) {
+	return reinterpret_cast<const str_t*>(x);
 }
 
 str::str() {
-	::memset(this, 0, sizeof(str));
+	init(cast(this));
 }
 
 str::str(const str& that) {
-	if (_sso(&that)) {
-		::memcpy(this, &that, sizeof(str));
-	}
-	else {
-		_str_t* _this = _str(this);
-		const _str_t* _that = _str(&that);
-		_this -> size = _that -> size;
-		_this -> capacity = _that -> capacity;
-		_this -> data = reinterpret_cast<char*>(::malloc(_this -> capacity));
-		::memcpy(_this -> data, _that -> data, _this -> size + 1);
-	}
+	init_copy(cast(this), cast(&that));
 }
 
 str::str(str&& that) {
-	::memcpy(this, &that, sizeof(str));
-	::memset(&that, 0, sizeof(str));
-}
-
-str::~str() {
-	if (!_sso) {
-		::free(_str(this) -> data);
-	}
-}
-
-void swap(str& a, str& b) {
-	char tmp[sizeof(str)];
-	::memcpy(tmp, &a, sizeof(str));
-	::memcpy(&a, &b, sizeof(str));
-	::memcpy(&b, tmp, sizeof(str));
-}
-
-str& str::operator=(const str& that) {
-	str tmp(that);
-	swap(*this, tmp);
-	return *this;
-}
-
-str& str::operator=(str&& that) {
-	swap(*this, that);
-	return *this;	
-}
-
-char* data(str& s) {
-	if (_sso(&s)) {
-		return s._data + 1;
-	}
-	else {
-		return _str(&s) -> data;
-	}
-}
-
-const char* data(const str& s) {
-	if (_sso(&s)) {
-		return s._data + 1;
-	}
-	else {
-		return _str(&s) -> data;
-	}
-}
-
-size_t nbytes(const str& s) {
-	if (_sso(&s)) {
-		return static_cast<size_t>(s._data[0]);
-	}
-	else {
-		return _str(&s) -> size;
-	}
-}
-
-str make_str() {
-	return str();
-}
-
-str make_str(const char* c_str) {
-	return make_str(c_str, c_str + ::strlen(c_str));
-}
-
-str make_str(const char* begin, const char* end) {
-	return make_str();
+	init_move(cast(this), cast(&that));
 }
 
 }

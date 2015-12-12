@@ -1,15 +1,10 @@
 #pragma once
-#include <cstddef>
 
 namespace haste {
 
-using std::size_t;
+using ullong = unsigned long long;
 
 class str;
-
-char* data(str&);
-const char* data(const str&);
-size_t nbytes(const str&);
 
 void swap(str&, str&);
 
@@ -20,15 +15,16 @@ public:
 	str(str&&);
 	~str();
 
-	friend void swap(str&, str&);
 	str& operator=(const str&);
 	str& operator=(str&&);
+	
+	friend void swap(str&, str&);
 
-	friend char* data(str& s);
-	friend const char* data(const str& s);
-	friend size_t nbytes(const str& s);
+	char* data();
+	const char* data() const;
+	ullong nbytes() const;
 private:
-	char _data[32];
+	char _data[sizeof(void*) * 4];
 };
 
 str make_str();
