@@ -61,19 +61,7 @@ TEST(str, basic) {
 	a = std::move(b);
 	ASSERT_EQ(0, a.nbytes());
 }
-
-TEST(str, cat) {
-	const char* H = "H";
-
-	ASSERT_STREQ("", cat("").data());
-	ASSERT_STREQ("", cat(str()).data());
-	ASSERT_STREQ("Hello world!", cat("Hello world!").data());
-
-	ASSERT_STREQ("Hello world!", cat("Hello", " ", "world!").data());	
-	ASSERT_STREQ("Hello world!", cat("Hello", str(" "), "world!").data());	
-	ASSERT_STREQ("Hello world!", cat(str("Hello"), str(" "), str("world!")).data());	
-	ASSERT_STREQ("Hello world!", cat(H, str("ello"), str(), str(" "), str("world!")).data());	
-}
+ 
 
 
 
