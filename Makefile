@@ -1,6 +1,6 @@
 
 CC = g++
-CC_FLAGS = -w -Wall -std=c++11 -Iinclude -Igoogletest/googletest/include
+CC_FLAGS = -g -O0 -w -Wall -std=c++11 -Iinclude -Igoogletest/googletest/include
 CC_DEPENDENCY_FLAGS = -MT $@ -MMD -MP -MF build/$*.Td
 POST_CC = mv -f build/$*.Td build/$*.d
 
@@ -19,7 +19,7 @@ run: build
 
 build: build/libformat.a build/test.bin;
 
-build/test.bin: $(TEST_OBJECTS)
+build/test.bin: $(TEST_OBJECTS) build/libformat.a
 	$(CC) $(TEST_OBJECTS) $(GTEST_LIBS_DIR) $(GTEST_LIBS) -Lbuild -lformat -o build/test.bin
 
 build/libformat.a: $(HASTE_OBJECTS)
