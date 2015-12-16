@@ -24,15 +24,7 @@ private:
 	char _data[sizeof(void*) * 4];
 };
 
-void swap(str&, str&);
+void swap(str&, str&);          
 
-str cat(const char* s);
-template <ullong N> str cat(const (char&)s[N]);
-str cat(const str& s);
-str cat(str&& s);
-
-template <class H, class... T> inline str cat(const H& h, const T&... t) {
-	return str();	
-}
-
+ 
 }

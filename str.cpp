@@ -7,6 +7,7 @@
 
 namespace haste {
 namespace detail {
+   
 
 static_assert(sizeof(str_t::sso_t) == sizeof(str_t), "Sizes must match.");
 
