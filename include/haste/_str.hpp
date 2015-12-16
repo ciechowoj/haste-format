@@ -24,6 +24,9 @@ void init(str_t* x);
 void init_copy(str_t* x, const str_t* s);
 void init_move(str_t* x, str_t* s);
 
+void assign_copy(str_t* x, const str_t* s);
+void assign_move(str_t* x, str_t* s);
+
 void clean(str_t* x);
 void swap(str_t* x, str_t* y);
 

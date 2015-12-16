@@ -16,7 +16,7 @@ TEST(str_t, init)
 	ASSERT_TRUE(::memcmp(&a, zeros, sizeof(str_t)) == 0);
 	ASSERT_STREQ("", data(&a));
 	ASSERT_EQ(0, nbytes(&a));
-	ASSERT_EQ(sizeof(str_t) - 1, capacity(&a));
+	ASSERT_EQ(sizeof(str_t) - 2, capacity(&a));
 }
 
 TEST(str_t, init_copy)
@@ -31,7 +31,7 @@ TEST(str_t, init_copy)
 	ASSERT_TRUE(::memcmp(&b, zeros, sizeof(str_t)) == 0);
 	ASSERT_STREQ("", data(&b));
 	ASSERT_EQ(0, nbytes(&b));
-	ASSERT_EQ(sizeof(str_t) - 1, capacity(&b));
+	ASSERT_EQ(sizeof(str_t) - 2, capacity(&b));
 }
 
 TEST(str_t, init_move)
@@ -46,7 +46,7 @@ TEST(str_t, init_move)
 	ASSERT_TRUE(::memcmp(&b, zeros, sizeof(str_t)) == 0);
 	ASSERT_STREQ("", data(&b));
 	ASSERT_EQ(0, nbytes(&b));
-	ASSERT_EQ(sizeof(str_t) - 1, capacity(&b));
+	ASSERT_EQ(sizeof(str_t) - 2, capacity(&b));
 }
 
 TEST(str, basic) {
@@ -61,6 +61,21 @@ TEST(str, basic) {
 	a = std::move(b);
 	ASSERT_EQ(0, a.nbytes());
 }
+
+TEST(str, cat) {
+	const char* H = "H";
+
+	ASSERT_STREQ("", cat("").data());
+	ASSERT_STREQ("", cat(str()).data());
+	ASSERT_STREQ("Hello world!", cat("Hello world!").data());
+
+	ASSERT_STREQ("Hello world!", cat("Hello", " ", "world!").data());	
+	ASSERT_STREQ("Hello world!", cat("Hello", str(" "), "world!").data());	
+	ASSERT_STREQ("Hello world!", cat(str("Hello"), str(" "), str("world!")).data());	
+	ASSERT_STREQ("Hello world!", cat(H, str("ello"), str(), str(" "), str("world!")).data());	
+}
+
+
 
 
 

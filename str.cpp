@@ -38,6 +38,20 @@ void init_move(str_t* x, str_t* s)
 	std::memset(s, 0, sizeof(str_t));
 }
 
+void assign_copy(str_t* x, const str_t* s) {
+	if (x != s) {
+		clean(x);
+		init_copy(x, s);
+	}
+}
+
+void assign_move(str_t* x, str_t* s) {
+	if (x != s) {
+		clean(x);
+		init_move(x, s);
+	}
+}
+
 void clean(str_t* x) {
 	if (!sso(x)) {
 		::free(x->heap.data);
@@ -111,6 +125,36 @@ str::str(const str& that) {
 
 str::str(str&& that) {
 	init_move(cast(this), cast(&that));
+}
+
+str::~str() {
+	clean(cast(this));
+}
+
+str& str::operator=(const str& that) {
+	assign_copy(cast(this), cast(&that));
+	return *this;
+}
+
+str& str::operator=(str&& that) {
+	assign_move(cast(this), cast(&that));
+	return *this;
+}
+
+void swap(str& x, str& y) {
+	swap(cast(&x), cast(&y));
+}
+
+char* str::data() {
+	return haste::detail::data(cast(this));
+}
+
+const char* str::data() const {
+	return haste::detail::data(cast(this));
+}
+
+ullong str::nbytes() const {
+	return haste::detail::nbytes(cast(this));
 }
 
 }
