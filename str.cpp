@@ -6,6 +6,29 @@
 
 namespace haste {
 
+str_ref::str_ref() {
+	_data[0] = nullptr;
+	_data[1] = nullptr;
+}
+
+str_ref::str_ref(const char* that) {
+	_data[0] = that;
+	_data[1] = that + std::strlen(that);	
+}
+
+str_ref::str_ref(const char* begin, const char* end) {
+	_data[0] = begin;
+	_data[1] = end;	
+}
+
+const char* begin(const str_ref& that) {
+	return reinterpret_cast<const char*>(&that);
+}
+
+const char* end(const str_ref& that) {
+	return reinterpret_cast<const char*>(&that);
+}
+
 union str_t {
 	struct heap_t {
 		char* data;
@@ -90,6 +113,27 @@ str::str(const char* that) {
 	}
 }
 
+str::str(const str_ref& that) {
+	ullong size = end(that) - begin(that);
+	auto* pthis = reinterpret_cast<str_t*>(this);
+
+	if (sso_max_size < size) {
+		pthis->heap.data = static_cast<char*>(std::malloc(size + 1));
+		pthis->heap.nbytes = size;
+		pthis->heap.nchars = size;
+		pthis->set_capacity(size + 1);
+		std::memcpy(pthis->heap.data, begin(that), size);
+		pthis->heap.data[size] = 0;
+	}
+	else {
+		pthis->sso.nbytes = static_cast<unsigned char>(size);
+		pthis->set_sso_nchars(size);
+		std::memcpy(pthis->sso.data, begin(that), size);
+		pthis->sso.data[size] = 0;
+	}
+
+}
+
 str::str(const str& that) {
 	auto* pthis = reinterpret_cast<str_t*>(this);
 	const auto* pthat = reinterpret_cast<const str_t*>(&that);
@@ -119,6 +163,11 @@ str::~str() {
 	}
 
 	std::memset(this, 0, sizeof(str));
+}
+
+str::operator str_ref() const {
+	const char* data = this -> data();
+	return str_ref(data, data + nbytes());
 }
 
 str& str::operator=(const str& that) {
@@ -166,6 +215,18 @@ bool operator==(const str& a, const str& b) {
 
 bool operator!=(const str& a, const str& b) {
 	return !(a == b);
+}
+
+str _concat(const str_ref* s, ullong n) {
+	size_t total = 0;
+
+	for () {
+		
+	}
+
+	if (n != 0) {
+		return str(s[0]);
+	}
 }
 
 }

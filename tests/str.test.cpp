@@ -22,12 +22,10 @@ TEST(string, base) {
 	ASSERT_EQ("xy", x);
 	ASSERT_EQ("x", y);
 	ASSERT_EQ("", z);
-	ASSERT_EQ("", w);
-
-	
+	ASSERT_EQ("", w);	
 }
 
-TEST(string, threshold)
+TEST(string, sso_threshold)
 {
 	str x;
 
@@ -74,6 +72,23 @@ TEST(string, threshold)
 	x = T38; ASSERT_EQ(T38, x); ASSERT_EQ(sizeof(T38) - 1, x.nbytes()); ASSERT_EQ(sizeof(T38) - 1, x.nchars());
 }
 
+TEST(string, concat) {
+	EXPECT_EQ("", concat(""));
+	EXPECT_EQ("0", concat("0"));
+	EXPECT_EQ("012", concat("012"));
+	EXPECT_EQ("0123", concat("0123"));
+	EXPECT_EQ("0123456789012345678901234567890123456789", 
+			  concat("0123456789012345678901234567890123456789"));
+
+	str x = "x";
+	const char* y = "y";
+	const char z[] = "z";
+
+	EXPECT_EQ("xyz", concat(x, y, z));
+}
 
 
 
+
+
+ 
