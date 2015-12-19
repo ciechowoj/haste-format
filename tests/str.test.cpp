@@ -1,9 +1,9 @@
 #include <gtest/gtest.h>
 #include <haste/str.hpp>
 
-using namespace haste;
-
 TEST(string, base) {
+	using namespace haste;
+
 	str x;
 	str y = "";
 	str z = "x";
@@ -14,7 +14,7 @@ TEST(string, base) {
 	str c = z;
 	str d = w;
 
-	x = d;
+	x = d; 
 	y = c;
 	z = b;
 	w = a;
@@ -27,6 +27,8 @@ TEST(string, base) {
 
 TEST(string, sso_threshold)
 {
+	using namespace haste;
+
 	str x;
 
 	const char T27[] = "012345678901234567890123456";
@@ -73,6 +75,8 @@ TEST(string, sso_threshold)
 }
 
 TEST(string, concat) {
+	using namespace haste;
+
 	EXPECT_EQ("", concat(""));
 	EXPECT_EQ("0", concat("0"));
 	EXPECT_EQ("012", concat("012"));
@@ -85,10 +89,12 @@ TEST(string, concat) {
 	const char z[] = "z";
 
 	EXPECT_EQ("xyz", concat(x, y, z));
-}
+} 
 
+TEST(string, concat2) {
+	haste::str x = "x";
+	const char* y = "y";
+	const char z[] = "z";
 
-
-
-
- 
+	EXPECT_EQ("xyz", concat(x, y, z));
+} 

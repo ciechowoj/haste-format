@@ -3,30 +3,49 @@
 #include <cstdlib>
 #include <cstring>
 #include <utility>
+#include <cstdio>
 
 namespace haste {
 
-str_ref::str_ref() {
-	_data[0] = nullptr;
-	_data[1] = nullptr;
+struct str_view_t {
+	const char* data;
+	size_t nbytes;
+	size_t nchars;
+};
+
+str_view::str_view() {
+	std::memset(this, 0, sizeof(str_view_t));
 }
 
-str_ref::str_ref(const char* that) {
-	_data[0] = that;
-	_data[1] = that + std::strlen(that);	
+str_view::str_view(const char* that) {
+	auto pthis = reinterpret_cast<str_view_t*>(this);
+	pthis->data = that;
+	pthis->nbytes = std::strlen(that);
+	pthis->nchars = pthis->nbytes;
 }
 
-str_ref::str_ref(const char* begin, const char* end) {
-	_data[0] = begin;
-	_data[1] = end;	
+str_view::str_view(const char* begin, const char* end) {
+	auto* pthis = reinterpret_cast<str_view_t*>(this);
+	pthis->data = begin;
+	pthis->nbytes = end - begin;
+	pthis->nchars = pthis->nbytes;
 }
 
-const char* begin(const str_ref& that) {
-	return reinterpret_cast<const char*>(&that);
+const char* begin(const str_view& _this) {
+	return reinterpret_cast<const str_view_t*>(&_this)->data;
 }
 
-const char* end(const str_ref& that) {
-	return reinterpret_cast<const char*>(&that);
+const char* end(const str_view& _this) {
+	const auto* pthis = reinterpret_cast<const str_view_t*>(&_this);
+	return pthis->data + pthis->nbytes;
+}
+
+size_t nbytes(const str_view& _this) {
+	return reinterpret_cast<const str_view_t*>(&_this)->nbytes;
+}
+
+size_t nchars(const str_view& _this) {
+	return reinterpret_cast<const str_view_t*>(&_this)->nchars;
 }
 
 union str_t {
@@ -34,7 +53,10 @@ union str_t {
 		char* data;
 		size_t nbytes;
 		size_t nchars;
+	private:
 		size_t capacity;
+
+		friend str_t;
 	} heap;
 
 	struct sso_t {
@@ -103,7 +125,7 @@ str::str(const char* that) {
 		pthis->heap.data = static_cast<char*>(std::malloc(size + 1));
 		pthis->heap.nbytes = size;
 		pthis->heap.nchars = size;
-		pthis->set_capacity(size + 1);
+		pthis->set_capacity(size);
 		std::memcpy(pthis->heap.data, that, size + 1);
 	}
 	else {
@@ -113,7 +135,7 @@ str::str(const char* that) {
 	}
 }
 
-str::str(const str_ref& that) {
+str::str(const str_view& that) {
 	ullong size = end(that) - begin(that);
 	auto* pthis = reinterpret_cast<str_t*>(this);
 
@@ -121,7 +143,7 @@ str::str(const str_ref& that) {
 		pthis->heap.data = static_cast<char*>(std::malloc(size + 1));
 		pthis->heap.nbytes = size;
 		pthis->heap.nchars = size;
-		pthis->set_capacity(size + 1);
+		pthis->set_capacity(size);
 		std::memcpy(pthis->heap.data, begin(that), size);
 		pthis->heap.data[size] = 0;
 	}
@@ -139,15 +161,15 @@ str::str(const str& that) {
 	const auto* pthat = reinterpret_cast<const str_t*>(&that);
 
 	if (pthat->using_heap()) {
-		pthis->heap.data = static_cast<char*>(std::malloc(pthat->heap.capacity));
+		pthis->heap.data = static_cast<char*>(std::malloc(pthat->capacity() + 1));
 		pthis->heap.nbytes = pthat->heap.nbytes;
 		pthis->heap.nchars = pthat->heap.nchars;
-		pthis->set_capacity(pthat->heap.capacity);
+		pthis->set_capacity(pthat->capacity());
 		std::memcpy(pthis->heap.data, pthat->heap.data, pthis->heap.nbytes + 1);
 	}
 	else {
 		std::memcpy(pthis, pthat, sizeof(str));	
-	}	
+	}
 }
 
 str::str(str&& that) {
@@ -165,9 +187,9 @@ str::~str() {
 	std::memset(this, 0, sizeof(str));
 }
 
-str::operator str_ref() const {
+str::operator str_view() const {
 	const char* data = this -> data();
-	return str_ref(data, data + nbytes());
+	return str_view(data, data + nbytes());
 }
 
 str& str::operator=(const str& that) {
@@ -180,11 +202,6 @@ str& str::operator=(str&& that) {
 	str tmp = std::move(that);
 	swap(*this, tmp);
 	return *this;
-}
-
-char* str::data() {
-	auto* pthis = reinterpret_cast<str_t*>(this);
-	return pthis->using_heap() ? pthis->heap.data : pthis->sso.data;
 }
 
 const char* str::data() const {
@@ -217,16 +234,76 @@ bool operator!=(const str& a, const str& b) {
 	return !(a == b);
 }
 
-str _concat(const str_ref* s, ullong n) {
-	size_t total = 0;
-
-	for () {
-		
+str unsafe_init(size_t nbytes, size_t nchars) {
+	str_t result;
+	
+	if (sso_max_size < nbytes) {
+		result.heap.data = static_cast<char*>(std::malloc(nbytes + 1));
+		result.heap.nbytes = nbytes;
+		result.heap.nchars = nchars;
+		result.set_capacity(nbytes);
+	}
+	else {
+		result.sso.nbytes = static_cast<unsigned char>(nbytes);
+		result.set_sso_nchars(nchars);	
 	}
 
-	if (n != 0) {
-		return str(s[0]);
+	return reinterpret_cast<str&&>(result);
+}
+
+void unsafe_resize(str& _this, size_t nbytes, size_t nchars) {
+	auto* pthis = reinterpret_cast<str_t*>(&_this);
+
+	if (pthis->using_heap()) {
+		size_t capacity = pthis->capacity();
+
+		if (capacity < nbytes || nbytes < capacity * 3 / 2) {
+			std::free(pthis->heap.data);
+		}
+		else {
+			pthis->heap.nbytes = nbytes;
+			pthis->heap.nchars = nchars;
+			return;
+		}
 	}
+	
+	if (sso_max_size < nbytes) {
+		pthis->heap.data = static_cast<char*>(std::malloc(nbytes + 1));
+		pthis->heap.nbytes = nbytes;
+		pthis->heap.nchars = nchars;
+		pthis->set_capacity(nbytes);
+	}
+	else {
+		pthis->sso.nbytes = static_cast<unsigned char>(nbytes);
+		pthis->set_sso_nchars(nchars);	
+	}	
+}
+
+char* unsafe_data(str& _this) {
+	auto* pthis = reinterpret_cast<str_t*>(&_this);
+	return pthis->using_heap() ? pthis->heap.data : pthis->sso.data;
+}
+
+str _concat(const str_view* s, size_t n) {
+	size_t total_nbytes = 0;
+	size_t total_nchars = 0;
+
+	for (size_t i = 0; i < n; ++i) {
+		total_nbytes += nbytes(s[i]);
+		total_nchars += nchars(s[i]);
+	}
+
+	str result = std::move(unsafe_init(total_nbytes, total_nchars));
+	char *ptr = unsafe_data(result);
+
+	for (size_t i = 0; i < n; ++i) {
+		std::memcpy(ptr, begin(s[i]), nbytes(s[i]));
+		ptr += nbytes(s[i]);
+	}
+
+	*ptr = 0;
+
+	return result;
 }
 
 }
